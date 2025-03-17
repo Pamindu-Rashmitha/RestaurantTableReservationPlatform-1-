@@ -7,8 +7,17 @@
     <title>Login - Reservation Platform</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: url('Assets/res.jpeg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 
 <div class="container">
     <div class="row justify-content-center" style="margin-top: 10%;">
@@ -18,7 +27,6 @@
                     <h4>Login</h4>
                 </div>
                 <div class="card-body">
-                    <!-- Display error message if exists -->
                     <%
                         String error = request.getParameter("error");
                         if(error != null) {
@@ -53,3 +61,4 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
