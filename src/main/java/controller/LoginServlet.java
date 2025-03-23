@@ -3,7 +3,7 @@ package controller;
 
 
 import model.User;
-import model.UserManager;
+import util.UserManager;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
