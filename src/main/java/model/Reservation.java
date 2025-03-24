@@ -21,7 +21,7 @@ public class Reservation {
         this.status = status;
     }
 
-    // Getters
+
     public String getReservationId() {
         return reservationId;
     }
@@ -41,7 +41,7 @@ public class Reservation {
         return status;
     }
 
-    // Setters
+
     public void setReservationId(String reservationId) {
         this.reservationId = reservationId;
     }
