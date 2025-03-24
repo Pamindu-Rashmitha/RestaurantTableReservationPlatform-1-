@@ -1,5 +1,9 @@
 package model;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Reservation {
     private String reservationId;
     private String userId;
@@ -57,3 +61,4 @@ public class Reservation {
         this.status = status;
     }
 }
+

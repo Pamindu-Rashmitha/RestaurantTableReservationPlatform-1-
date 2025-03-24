@@ -15,7 +15,13 @@
 <body>
 <div class="container mt-5">
   <h2>Welcome, <%= user.getName() %>!</h2>
-  <p>This is your customer dashboard. You can make reservations here (to be implemented).</p>
+  <br><br><br>
+  <p>"Welcome to your dashboard! Here, you can easily view and manage your upcoming reservations,
+    check availability, and modify your bookings with just a few clicks. Enjoy a seamless dining
+    experience by securing your table in advance. Need to make changes? No problem—your reservation
+    details are always at your fingertips. Start planning your perfect meal now!"</p>
+  <br><br><br>
+  <a href="makeReservation.jsp" class="btn btn-primary">Make a Reservation</a>
   <a href="logout" class="btn btn-danger">Logout</a>
 </div>
 </body>
