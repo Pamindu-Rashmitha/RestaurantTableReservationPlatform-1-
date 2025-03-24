@@ -1,4 +1,6 @@
-package model;
+package util;
+
+import model.Reservation;
 
 import java.io.*;
 import java.util.ArrayList;

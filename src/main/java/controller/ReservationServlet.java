@@ -1,7 +1,7 @@
 package controller;
 
 import model.Reservation;
-import model.ReservationManager;
+import util.ReservationManager;
 import model.User;
 
 import jakarta.servlet.ServletException;
