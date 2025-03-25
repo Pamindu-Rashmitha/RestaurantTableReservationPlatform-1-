@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.User" %>
 <%@ page import="model.Reservation" %>
+<%@ page import="java.util.List" %>
 <%
   User user = (User) session.getAttribute("user");
   if (user == null || !"customer".equals(user.getRole())) {
@@ -8,10 +9,21 @@
     return;
   }
 %>
+<%
+  List<Reservation> reservations = (List<Reservation>) request.getAttribute("reservations");
+%>
 <html>
 <head>
   <title>Customer Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .table th, .table td {
+      text-align: center; /* Center-align text in all cells */
+    }
+    .table th:first-child, .table td:first-child {
+      width: 10%; /* Make the ID column narrower */
+    }
+  </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -27,20 +39,20 @@
   <br><br><br>
   <div class="container">
     <h2>Your Reservations</h2>
-    <table class="table table-striped">
-      <thead>
+    <% if (reservations != null && !reservations.isEmpty()) { %>
+    <table class="table table-striped table-bordered table-hover">
+      <thead class="thead-dark">
       <tr>
-        <th>ID</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Guests</th>
-        <th>Status</th>
-        <th>Action</th>
+        <th scope="col">ID</th>
+        <th scope="col">Date</th>
+        <th scope="col">Time</th>
+        <th scope="col">Guests</th>
+        <th scope="col">Status</th>
+        <th scope="col">Action</th>
       </tr>
       </thead>
       <tbody>
-      <% Reservation[] reservations = new Reservation[0];
-        for (Reservation reservation : reservations) { %>
+      <% for (Reservation reservation : reservations) { %>
       <tr>
         <td><%= reservation.getReservationId() %></td>
         <td><%= reservation.getDate() %></td>
@@ -48,8 +60,14 @@
         <td><%= reservation.getNumberOfGuests() %></td>
         <td><%= reservation.getStatus() %></td>
         <td>
-          <% if (!"Cancelled".equals(reservation.getStatus())) { %>
-          <form action="cancelReservation" method="post">
+          <% if ("Pending".equals(reservation.getStatus())) { %>
+          <a href="editReservation?reservationId=<%= reservation.getReservationId() %>" class="btn btn-primary btn-sm">Edit</a>
+          <form action="cancelReservation" method="post" style="display:inline;">
+            <input type="hidden" name="reservationId" value="<%= reservation.getReservationId() %>">
+            <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+          </form>
+          <% } else if (!"Cancelled".equals(reservation.getStatus())) { %>
+          <form action="cancelReservation" method="post" style="display:inline;">
             <input type="hidden" name="reservationId" value="<%= reservation.getReservationId() %>">
             <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
           </form>
@@ -59,7 +77,10 @@
       <% } %>
       </tbody>
     </table>
+    <% } else { %>
+    <p>No reservations found.</p>
+    <% } %>
   </div>
+</div>
 </body>
 </html>
-

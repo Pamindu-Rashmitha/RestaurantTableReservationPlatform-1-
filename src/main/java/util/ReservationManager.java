@@ -48,7 +48,7 @@ public class ReservationManager {
         return userReservations;
     }
 
-    private void saveReservations(List<Reservation> reservations, String filePath) {
+    public void saveReservations(List<Reservation> reservations, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (Reservation reservation : reservations) {
                 writer.write(reservation.getReservationId() + "," + reservation.getUserId() + "," +
@@ -60,4 +60,28 @@ public class ReservationManager {
             e.printStackTrace();
         }
     }
+
+    public Reservation getReservationById(String reservationId, String filePath) {
+        List<Reservation> reservations = getAllReservations(filePath);
+        for (Reservation r : reservations) {
+            if (r.getReservationId().equals(reservationId)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    public boolean updateReservation(Reservation updatedRes, String filePath) {
+        List<Reservation> reservations = getAllReservations(filePath);
+        for (int i = 0; i < reservations.size(); i++) {
+            if (reservations.get(i).getReservationId().equals(updatedRes.getReservationId())) {
+                reservations.set(i, updatedRes);
+                saveReservations(reservations, filePath);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }
