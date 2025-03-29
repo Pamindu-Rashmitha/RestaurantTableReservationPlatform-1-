@@ -1,4 +1,3 @@
 Pamindu,2520,admin,pamindu,pamidurashmitha@gmail.com
 Hasindu,1234,customer,Hasiya,pamindu440@gmail.com
 Chathu,2520,customer,Chathuni,chathu123@gmail.com
-Vinod,vinod1234,customer,Vinod,vinod1234@gmail.com

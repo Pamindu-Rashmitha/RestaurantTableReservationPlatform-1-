@@ -39,6 +39,8 @@
   <br><br><br>
   <div class="container">
     <h2>Your Reservations</h2>
+    <!-- Refresh Button -->
+    <a href="customerDashboard" class="btn btn-info mb-3">Refresh Reservations</a>
     <% if (reservations != null && !reservations.isEmpty()) { %>
     <table class="table table-striped table-bordered table-hover">
       <thead class="thead-dark">
@@ -61,7 +63,10 @@
         <td><%= reservation.getStatus() %></td>
         <td>
           <% if ("Pending".equals(reservation.getStatus())) { %>
-          <a href="editReservation?reservationId=<%= reservation.getReservationId() %>" class="btn btn-primary btn-sm">Edit</a>
+          <a href="payment.jsp?reservationId=<%= reservation.getReservationId() %>"
+             class="btn btn-success btn-sm" title="Make payment for this reservation">Pay Now</a>
+          <a href="editReservation?reservationId=<%= reservation.getReservationId() %>"
+             class="btn btn-primary btn-sm">Edit</a>
           <form action="cancelReservation" method="post" style="display:inline;">
             <input type="hidden" name="reservationId" value="<%= reservation.getReservationId() %>">
             <button type="submit" class="btn btn-danger btn-sm">Cancel</button>

@@ -51,6 +51,15 @@ public class UserManager {
         return null; // User not found
     }
 
+    public boolean removeUser(String username, String filePath) {
+        List<User> users = getAllUsers(filePath);
+        boolean removed = users.removeIf(user -> user.getUsername().equals(username));
+        if (removed) {
+            saveUsers(users, filePath);
+        }
+        return removed;
+    }
+
     // Save all users to file (Helper method)
     private void saveUsers(List<User> users, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {

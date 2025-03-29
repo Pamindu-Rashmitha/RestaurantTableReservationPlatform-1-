@@ -3,7 +3,6 @@ package controller;
 import model.Reservation;
 import util.ReservationManager;
 import model.User;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,7 +23,8 @@ public class ReservationServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // Check if the user is logged in
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
