@@ -40,6 +40,17 @@ public class UserManager {
         return true;
     }
 
+    // Check if email already exists
+    public boolean emailExists(String email, String filePath) {
+        List<User> users = getAllUsers(filePath);
+        for (User user : users) {
+            if (user.getEmail().equalsIgnoreCase(email.trim())) {
+                return true; // Email exists
+            }
+        }
+        return false;
+    }
+
     // Get user by username (Read for login)
     public User getUserByUsername(String username, String filePath) {
         List<User> users = getAllUsers(filePath);
