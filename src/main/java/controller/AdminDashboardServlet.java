@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 @WebServlet("/adminDashboard")
 public class AdminDashboardServlet extends HttpServlet {
@@ -34,16 +35,33 @@ public class AdminDashboardServlet extends HttpServlet {
             return;
         }
 
+        // Load reservations from file
         String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
         List<Reservation> allReservations = reservationManager.getAllReservations(filePath);
+
+        // Retrieve search parameter and filter reservations if needed
+        String searchTerm = request.getParameter("searchTerm");
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            String lowerCaseSearch = searchTerm.toLowerCase();
+            List<Reservation> filteredReservations = new ArrayList<>();
+            for (Reservation res : allReservations) {
+                if (res.getReservationId().toLowerCase().contains(lowerCaseSearch) ||
+                        res.getUserId().toLowerCase().contains(lowerCaseSearch) ||
+                        res.getDate().toLowerCase().contains(lowerCaseSearch) ||
+                        res.getTime().toLowerCase().contains(lowerCaseSearch)) {
+                    filteredReservations.add(res);
+                }
+            }
+            allReservations = filteredReservations;
+        }
         request.setAttribute("allReservations", allReservations);
 
+        // Load users from file
         String userFilePath = getServletContext().getRealPath("/WEB-INF/users.txt");
         List<User> allUsers = userManager.getAllUsers(userFilePath);
         request.setAttribute("allUsers", allUsers);
-        request.setAttribute("allReservations", allReservations);
 
-        request.getRequestDispatcher("adminDashboard.jsp").forward(request, response);
+        // Forward to adminDashboard.jsp
         request.getRequestDispatcher("adminDashboard.jsp").forward(request, response);
     }
 }
