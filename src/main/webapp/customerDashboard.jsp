@@ -95,7 +95,7 @@
 <body>
 <div class="container overlay">
   <h1 class="dashboard-header">Customer Dashboard</h1>
-  <p class="text-center">Welcome, <%= user.getName() %>!</p>
+  <p class="text-center">Hi, <%= user.getName() %>!</p>
   <br>
   <p class="text-center">
     "Welcome to your dashboard! Here, you can easily view and manage your upcoming reservations,
@@ -106,6 +106,7 @@
   <br>
   <div class="text-center">
     <a href="makeReservation.jsp" class="btn btn-primary btn-custom">Make a Reservation</a>
+    <a href="editProfile.jsp" class="btn btn-primary btn-custom">Edit Profile</a>
     <a href="logout" class="btn btn-danger btn-custom">Logout</a>
   </div>
   <br>
@@ -137,11 +138,11 @@
             <td><%= reservation.getStatus() %></td>
             <td>
               <% if ("Pending".equals(reservation.getStatus())) { %>
-              <a href="payment.jsp?reservationId=<%= reservation.getReservationId() %>" class="btn btn-success btn-sm btn-custom" title="Make payment for this reservation">Pay Now</a>
+              <a href="payment.jsp?reservationId=<%= reservation.getReservationId() %>" class="btn btn-primary btn-sm">Pay Now</a>
               <a href="editReservation?reservationId=<%= reservation.getReservationId() %>" class="btn btn-primary btn-sm btn-custom">Edit</a>
               <form action="cancelReservation" method="post" style="display:inline;">
                 <input type="hidden" name="reservationId" value="<%= reservation.getReservationId() %>">
-                <button type="submit" class="btn btn-danger btn-sm btn-custom">Cancel</button>
+                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
               </form>
               <% } else if (!"Cancelled".equals(reservation.getStatus())) { %>
               <form action="cancelReservation" method="post" style="display:inline;">
@@ -161,9 +162,11 @@
     </div>
   </div>
 </div>
+
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+

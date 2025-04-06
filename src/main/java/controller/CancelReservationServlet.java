@@ -21,6 +21,7 @@ public class CancelReservationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         String reservationId = request.getParameter("reservationId");
         String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
 

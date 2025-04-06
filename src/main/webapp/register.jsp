@@ -102,7 +102,7 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" class="form-control" placeholder="Enter a strong password" required aria-describedby="password-requirements">
         <div id="password-requirements" class="password-requirements">
-          Password must be at least 8 characters, include uppercase, lowercase, number, and special character (!@#$%^&*).
+          Password must be at least 6 characters, include uppercase, lowercase, number, and special character (!@#$%^&*).
         </div>
       </div>
       <div class="form-group mb-4">

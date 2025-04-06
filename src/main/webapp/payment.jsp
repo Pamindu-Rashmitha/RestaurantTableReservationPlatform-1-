@@ -1,89 +1,138 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="model.User" %>
+<%@ page import="model.Reservation" %>
+<%@ page import="util.ReservationManager" %>
+<%
+  User user = (User) session.getAttribute("user");
+  if (user == null) {
+    response.sendRedirect("login.jsp");
+    return;
+  }
+  String reservationId = request.getParameter("reservationId");
+  ReservationManager reservationManager = new ReservationManager();
+  String reservationFilePath = application.getRealPath("/WEB-INF/reservations.txt");
+  Reservation reservation = reservationManager.getReservationById(reservationId, reservationFilePath);
+  if (reservation == null || !reservation.getUserId().equals(user.getUsername())) {
+    response.sendRedirect("customerDashboard.jsp");
+    return;
+  }
+  int initialGuests = reservation.getNumberOfGuests();
+  double initialAmount = 10.00 * initialGuests; // $10 per guest
+%>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <!-- Responsive Meta Tag -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Payment</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
-    /* Full-page background image */
     body {
-      background: url('assets/res.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background-color: #f8f9fa;
       color: #212529;
-      margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     }
-    /* Overlay for content readability */
-    .overlay {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 30px;
+    .payment-container {
+      max-width: 500px;
+      background-color: white;
       border-radius: 10px;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-      margin: 30px auto;
-      max-width: 600px;
+      padding: 30px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
     }
-    .dashboard-header {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 2.5rem;
+    .payment-title {
+      font-weight: 300;
+      margin-bottom: 25px;
       color: #343a40;
-      font-weight: bold;
     }
-    .btn-custom {
+    .btn-pay {
+      background-color: #6c63ff;
+      border-color: #6c63ff;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-weight: 500;
+      width: 100%;
       transition: all 0.3s ease;
     }
-    .btn-custom:hover, .btn-custom:focus {
+    .btn-pay:hover, .btn-pay:focus {
+      background-color: #5a52e0;
+      border-color: #5a52e0;
       transform: translateY(-2px);
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .dashboard-header {
-        font-size: 2rem;
-      }
-      .overlay {
-        padding: 20px;
-      }
+    .form-control {
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      padding: 12px 15px;
     }
-    @media (max-width: 576px) {
-      .dashboard-header {
-        font-size: 1.8rem;
-      }
-      .overlay {
-        padding: 15px;
-      }
+    .form-control:focus {
+      border-color: #6c63ff;
+      box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
+    }
+    .card-details {
+      display: none;
     }
   </style>
 </head>
 <body>
-<div class="container overlay">
-  <h1 class="dashboard-header">Payment for Reservation: <%= request.getParameter("reservationId") %></h1>
-  <form action="payment" method="post">
-    <input type="hidden" name="reservationId" value="<%= request.getParameter("reservationId") %>">
-    <div class="form-group">
-      <label>Card Number:</label>
-      <input type="text" name="cardNumber" class="form-control" required>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="payment-container">
+    <h2 class="payment-title text-center">Payment for Reservation</h2>
+    <% if (request.getAttribute("error") != null) { %>
+    <div class="alert alert-danger" role="alert">
+      <%= request.getAttribute("error") %>
     </div>
-    <div class="form-group">
-      <label>Expiry Date:</label>
-      <input type="text" name="expiryDate" class="form-control" required placeholder="MM/YY">
-    </div>
-    <div class="form-group">
-      <label>CVV:</label>
-      <input type="text" name="cvv" class="form-control" required>
-    </div>
-    <div class="text-center">
-      <button type="submit" class="btn btn-success btn-custom">Pay Now</button>
-      <a href="customerDashboard.jsp" class="btn btn-secondary btn-custom">Cancel</a>
-    </div>
-  </form>
+    <% } %>
+    <form action="processPayment" method="post">
+      <input type="hidden" name="reservationId" value="<%= reservationId %>">
+      <div class="form-group mb-4">
+        <label for="numberOfGuests">Number of Guests</label>
+        <input type="number" id="numberOfGuests" name="numberOfGuests" class="form-control" value="<%= initialGuests %>" min="1" required oninput="updateAmount()">
+      </div>
+      <div class="form-group mb-4">
+        <label for="amount">Amount ($10 per guest)</label>
+        <input type="text" id="amount" name="amount" class="form-control" value="<%= initialAmount %>" readonly>
+      </div>
+      <div class="form-group mb-4">
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod" name="paymentMethod" class="form-control" required onchange="toggleCardDetails()">
+          <option value="Credit Card">Credit Card</option>
+          <option value="Debit Card">Debit Card</option>
+        </select>
+      </div>
+      <div id="cardDetails" class="card-details">
+        <div class="form-group mb-4">
+          <label for="cardNumber">Card Number</label>
+          <input type="text" id="cardNumber" name="cardNumber" class="form-control" placeholder="1234 5678 9012 3456">
+        </div>
+        <div class="form-group mb-4">
+          <label for="expiryDate">Expiry Date</label>
+          <input type="text" id="expiryDate" name="expiryDate" class="form-control" placeholder="MM/YY">
+        </div>
+        <div class="form-group mb-4">
+          <label for="cvv">CVV</label>
+          <input type="text" id="cvv" name="cvv" class="form-control" placeholder="123">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-pay">Pay Now</button>
+    </form>
+  </div>
 </div>
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  function updateAmount() {
+    var guests = document.getElementById("numberOfGuests").value;
+    var amount = guests * 10.00; // $10 per guest
+    document.getElementById("amount").value = amount.toFixed(2);
+  }
+
+  function toggleCardDetails() {
+    var method = document.getElementById("paymentMethod").value;
+    var cardDetails = document.getElementById("cardDetails");
+    if (method === "Credit Card" || method === "Debit Card") {
+      cardDetails.style.display = "block";
+    } else {
+      cardDetails.style.display = "none";
+    }
+  }
+
+  // Set initial visibility on page load
+  toggleCardDetails();
+</script>
 </body>
 </html>

@@ -1,7 +1,6 @@
 package util;
 
 import model.User;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +34,7 @@ public class UserManager {
                 return false; // Username exists
             }
         }
+        // Directly set the password without hashing
         users.add(user);
         saveUsers(users, filePath);
         return true;
@@ -51,7 +51,7 @@ public class UserManager {
         return false;
     }
 
-    // Get user by username (Read for login)
+    // Get user by username (Read for login or other purposes)
     public User getUserByUsername(String username, String filePath) {
         List<User> users = getAllUsers(filePath);
         for (User user : users) {
@@ -62,6 +62,37 @@ public class UserManager {
         return null; // User not found
     }
 
+    // Authenticate user by username and password
+    public User authenticate(String username, String password, String filePath) {
+        List<User> users = getAllUsers(filePath);
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    // Update a user's details
+    public boolean updateUser(User updatedUser, String filePath) {
+        List<User> users = getAllUsers(filePath);
+        boolean userFound = false;
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUsername().equals(updatedUser.getUsername())) {
+                // Update the user details directly (password is stored as plain text)
+                users.set(i, updatedUser);
+                userFound = true;
+                break;
+            }
+        }
+        if (userFound) {
+            saveUsers(users, filePath);
+            return true;
+        }
+        return false;
+    }
+
+    // Remove a user by username
     public boolean removeUser(String username, String filePath) {
         List<User> users = getAllUsers(filePath);
         boolean removed = users.removeIf(user -> user.getUsername().equals(username));
