@@ -102,7 +102,7 @@ public class UserManager {
         return removed;
     }
 
-    // Save all users to file (Helper method)
+    // Save all users to file
     private void saveUsers(List<User> users, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (User user : users) {
