@@ -8,9 +8,9 @@ import java.util.List;
 public class ReservationManager {
 
     /**
-     * Retrieves all reservations from the specified file.
+     * Retrieves all reservations from the specified file and sorts them by time.
      * @param filePath The path to the reservations file.
-     * @return A list of Reservation objects parsed from the file.
+     * @return A sorted list of Reservation objects parsed from the file.
      */
     public List<Reservation> getAllReservations(String filePath) {
         List<Reservation> reservations = new ArrayList<>();
@@ -34,7 +34,48 @@ public class ReservationManager {
         } catch (IOException e) {
             e.printStackTrace(); // In production, consider using a logging framework
         }
-        return reservations;
+        return mergeSortReservations(reservations);
+    }
+
+    /**
+     * Sorts the list of reservations using merge sort based on time.
+     * @param reservations The list to sort.
+     * @return A new sorted list of reservations.
+     */
+    public List<Reservation> mergeSortReservations(List<Reservation> reservations) {
+        if (reservations.size() <= 1) {
+            return reservations;
+        }
+        // Split the list into two halves
+        int mid = reservations.size() / 2;
+        List<Reservation> left = mergeSortReservations(new ArrayList<>(reservations.subList(0, mid)));
+        List<Reservation> right = mergeSortReservations(new ArrayList<>(reservations.subList(mid, reservations.size())));
+        // Merge the sorted halves
+        return merge(left, right);
+    }
+
+    /**
+     * Merges two sorted lists of reservations into a single sorted list.
+     * @param left The left half of the list.
+     * @param right The right half of the list.
+     * @return A merged and sorted list.
+     */
+    private List<Reservation> merge(List<Reservation> left, List<Reservation> right) {
+        List<Reservation> merged = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < left.size() && j < right.size()) {
+            if (new ReservationTimeComparator().compare(left.get(i), right.get(j)) <= 0) {
+                merged.add(left.get(i));
+                i++;
+            } else {
+                merged.add(right.get(j));
+                j++;
+            }
+        }
+        // Add remaining elements
+        merged.addAll(left.subList(i, left.size()));
+        merged.addAll(right.subList(j, right.size()));
+        return merged;
     }
 
     /**
@@ -59,7 +100,7 @@ public class ReservationManager {
      * Retrieves all reservations for a specific user.
      * @param userId The ID of the user.
      * @param filePath The path to the reservations file.
-     * @return A list of reservations associated with the user.
+     * @return A list of reservations associated with the user, sorted by time.
      */
     public List<Reservation> getReservationsByUser(String userId, String filePath) {
         List<Reservation> userReservations = new ArrayList<>();
@@ -124,6 +165,12 @@ public class ReservationManager {
         return false;
     }
 
+    /**
+     * Removes all reservations for a specific user.
+     * @param userId The ID of the user.
+     * @param filePath The path to the reservations file.
+     * @return true if any reservations were removed, false otherwise.
+     */
     public boolean removeReservationsByUser(String userId, String filePath) {
         List<Reservation> reservations = getAllReservations(filePath);
         boolean removed = reservations.removeIf(reservation -> reservation.getUserId().equals(userId));
@@ -132,6 +179,4 @@ public class ReservationManager {
         }
         return removed;
     }
-
-
 }

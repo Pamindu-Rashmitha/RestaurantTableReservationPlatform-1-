@@ -23,12 +23,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <!-- Responsive Meta Tag -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
-    /* Full background image with fixed positioning */
     body {
       background: url('assets/res.jpeg') no-repeat center center fixed;
       background-size: cover;
@@ -37,7 +35,6 @@
       margin: 0;
       padding: 0;
     }
-    /* Overlay for readability */
     .overlay {
       background: rgba(255, 255, 255, 0.95);
       padding: 30px;
@@ -74,32 +71,18 @@
     .table-hover tbody tr:hover {
       background-color: rgba(241, 241, 241, 0.8);
     }
-    /* Modal enhancements */
     .modal-content {
       border-radius: 10px;
     }
-    /* Responsive adjustments */
     @media (max-width: 768px) {
-      .dashboard-header {
-        font-size: 2rem;
-      }
-      .overlay {
-        padding: 20px;
-      }
-      .card-header {
-        font-size: 1.1rem;
-      }
+      .dashboard-header { font-size: 2rem; }
+      .overlay { padding: 20px; }
+      .card-header { font-size: 1.1rem; }
     }
     @media (max-width: 576px) {
-      .dashboard-header {
-        font-size: 1.8rem;
-      }
-      .overlay {
-        padding: 15px;
-      }
-      .table-responsive {
-        font-size: 0.9rem;
-      }
+      .dashboard-header { font-size: 1.8rem; }
+      .overlay { padding: 15px; }
+      .table-responsive { font-size: 0.9rem; }
     }
   </style>
 </head>

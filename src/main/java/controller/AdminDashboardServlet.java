@@ -41,7 +41,9 @@ public class AdminDashboardServlet extends HttpServlet {
         String userFilePath = getServletContext().getRealPath("/WEB-INF/users.txt");
         List<User> allUsers = userManager.getAllUsers(userFilePath);
         request.setAttribute("allUsers", allUsers);
+        request.setAttribute("allReservations", allReservations);
 
+        request.getRequestDispatcher("adminDashboard.jsp").forward(request, response);
         request.getRequestDispatcher("adminDashboard.jsp").forward(request, response);
     }
 }
