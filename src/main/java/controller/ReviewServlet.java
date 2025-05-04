@@ -45,6 +45,6 @@ public class ReviewServlet extends HttpServlet {
             reviewManager.addReview(review, filePath);
             response.sendRedirect("review?action=list");
 
-        } 
+        }
     }
 }
