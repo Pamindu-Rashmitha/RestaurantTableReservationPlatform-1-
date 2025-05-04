@@ -23,12 +23,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <!-- Responsive Meta Tag -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
-    /* Full background image with fixed positioning */
     body {
       background: url('assets/res.jpeg') no-repeat center center fixed;
       background-size: cover;
@@ -37,7 +35,6 @@
       margin: 0;
       padding: 0;
     }
-    /* Overlay for readability */
     .overlay {
       background: rgba(255, 255, 255, 0.95);
       padding: 30px;
@@ -74,11 +71,9 @@
     .table-hover tbody tr:hover {
       background-color: rgba(241, 241, 241, 0.8);
     }
-    /* Modal enhancements */
     .modal-content {
       border-radius: 10px;
     }
-    /* Responsive adjustments */
     @media (max-width: 768px) {
       .dashboard-header {
         font-size: 2rem;
@@ -146,15 +141,16 @@
     </div>
   </div>
 
-  <!-- Search Form -->
-
-
-
   <!-- Reservations Section -->
   <div class="card">
     <div class="card-header">All Reservations</div>
     <div class="card-body">
-      <a href="adminDashboard" class="btn btn-info mb-3 btn-custom">Refresh Reservations</a>
+
+      <!-- Buttons Row -->
+      <div class="mb-3 d-flex flex-wrap gap-2">
+        <a href="adminDashboard" class="btn btn-info btn-custom mr-2">Refresh Reservations</a>
+      </div>
+
       <% if (allReservations != null && !allReservations.isEmpty()) { %>
       <form action="adminDashboard" method="get" class="mb-3">
         <div class="row">
@@ -213,25 +209,24 @@
       <% } %>
     </div>
   </div>
+
   <a href="logout" class="btn btn-danger mt-3 btn-custom">Logout</a>
 </div>
 
-<!-- Remove Customer Modal -->
+<!-- Modals -->
 <div class="modal fade" id="removeCustomerModal" tabindex="-1" role="dialog" aria-labelledby="removeCustomerModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="removeCustomerModalLabel">Confirm Removal</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <h5 class="modal-title">Confirm Removal</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
         Are you sure you want to remove this customer? This will also delete all their reservations.
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <form action="removeCustomer" method="post" style="display:inline;">
+        <form action="removeCustomer" method="post">
           <input type="hidden" name="username" id="removeUsername">
           <button type="submit" class="btn btn-danger">Remove</button>
         </form>
@@ -240,22 +235,19 @@
   </div>
 </div>
 
-<!-- Cancel Reservation Modal -->
 <div class="modal fade" id="cancelReservationModal" tabindex="-1" role="dialog" aria-labelledby="cancelReservationModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="cancelReservationModalLabel">Confirm Cancellation</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <h5 class="modal-title">Confirm Cancellation</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
         Are you sure you want to cancel this reservation?
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <form action="cancelReservationAdmin" method="post" style="display:inline;">
+        <form action="cancelReservationAdmin" method="post">
           <input type="hidden" name="reservationId" id="cancelReservationId">
           <button type="submit" class="btn btn-danger">Cancel Reservation</button>
         </form>
@@ -272,15 +264,13 @@
   $('#removeCustomerModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget);
     var username = button.data('username');
-    var modal = $(this);
-    modal.find('#removeUsername').val(username);
+    $(this).find('#removeUsername').val(username);
   });
 
   $('#cancelReservationModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget);
     var reservationId = button.data('reservationid');
-    var modal = $(this);
-    modal.find('#cancelReservationId').val(reservationId);
+    $(this).find('#cancelReservationId').val(reservationId);
   });
 </script>
 </body>

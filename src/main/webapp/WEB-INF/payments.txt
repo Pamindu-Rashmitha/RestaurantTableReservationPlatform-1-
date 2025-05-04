@@ -1,2 +1,4 @@
 ed94a5fa-906e-4f7d-aa56-8d405495ef7b,RES1743621266471,Hasiya,40.0,Credit Card,Completed
 398cfea2-f8ac-4449-a433-8d011c529990,RES1743705189506,Hasiya,20.0,Debit Card,Completed
+ae05a524-e0b0-46eb-8efb-50f8d6d73849,RES1743947008526,Chathu,60.0,Credit Card,Completed
+32e370cb-f23b-4969-950d-25c8c8b2261b,RES1743946874687,Hasiya,10.0,Credit Card,Completed

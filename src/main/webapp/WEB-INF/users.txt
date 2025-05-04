@@ -1,3 +1,5 @@
 Pamindu,Pam@1234,admin,pamindu,pamidurashmitha@gmail.com
 Hasiya,Hasiya@123,customer,Hasindu,hasi@gmail.com
 Chathu,Chathu@123,customer,Camellia,chathu123@gmail.com
+Geeth,Geeth@123,customer,Geeth,geeth123@gmail.com
+vinod,Vinod@123,customer,vinod,vino123@gmail.com

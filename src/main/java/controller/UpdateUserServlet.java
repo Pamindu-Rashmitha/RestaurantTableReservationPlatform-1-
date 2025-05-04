@@ -34,12 +34,12 @@ public class UpdateUserServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         // Validate inputs
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null || name.isEmpty()) {
             request.setAttribute("error", "Name cannot be empty.");
             request.getRequestDispatcher("editProfile.jsp").forward(request, response);
             return;
         }
-        if (email == null || email.trim().isEmpty()) {
+        if (email == null || email.isEmpty()) {
             request.setAttribute("error", "Email cannot be empty.");
             request.getRequestDispatcher("editProfile.jsp").forward(request, response);
             return;
@@ -55,7 +55,7 @@ public class UpdateUserServlet extends HttpServlet {
 
         // Create updated user object
         User updatedUser = new User(username, user.getPassword(), user.getRole(), name, email);
-        if (password != null && !password.trim().isEmpty()) {
+        if (password != null && !password.isEmpty()) {
             updatedUser.setPassword(password); // New password will be hashed in updateUser
         }
 

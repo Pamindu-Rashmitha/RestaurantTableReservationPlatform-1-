@@ -161,6 +161,10 @@
       <% } %>
     </div>
   </div>
+  <!-- Add a Review Button -->
+  <div class="text-center mt-3">
+    <a href="review?action=list" class="btn btn-info btn-custom">Add a Review</a>
+  </div>
 </div>
 
 <!-- Scripts -->
@@ -169,4 +173,3 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-

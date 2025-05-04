@@ -75,6 +75,10 @@
         Explore our site to register, log in, and manage your reservations.
     </p>
 </div>
+<div class="text-center mt-4">
+    <a href="review?action=list" class="btn btn-outline-primary btn-lg">View Customer Reviews</a>
+</div>
+
 
 <!-- Footer -->
 <footer class="bg-dark text-white text-center p-3 mt-5">
