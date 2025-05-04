@@ -44,20 +44,7 @@ public class ReviewServlet extends HttpServlet {
             Review review = new Review(reviewId, userId, reservationId, rating, comment, timestamp);
             reviewManager.addReview(review, filePath);
             response.sendRedirect("review?action=list");
-        } else if ("update".equals(action)) {
-            String reviewId = request.getParameter("reviewId");
-            int rating = Integer.parseInt(request.getParameter("rating"));
-            String comment = request.getParameter("comment");
-            String timestamp = LocalDateTime.now().toString();
 
-
-        } else if ("delete".equals(action)) {
-            String reviewId = request.getParameter("reviewId");
-            if (reviewManager.deleteReview(reviewId, filePath)) {
-                response.sendRedirect("review?action=list");
-            } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            }
-        }
+        } 
     }
 }
