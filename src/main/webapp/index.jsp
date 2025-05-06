@@ -30,6 +30,7 @@
         .hero h1 {
             font-size: 3rem;
             margin-bottom: 20px;
+
         }
     </style>
 </head>
@@ -49,6 +50,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="register.jsp">Register</a>
+            </li>
+            <li class="nav-item">
+                <a href="review?action=list" class="nav-link">Reviews</a>
             </li>
         </ul>
     </div>
@@ -75,10 +79,6 @@
         Explore our site to register, log in, and manage your reservations.
     </p>
 </div>
-<div class="text-center mt-4">
-    <a href="review?action=list" class="btn btn-outline-primary btn-lg">View Customer Reviews</a>
-</div>
-
 
 <!-- Footer -->
 <footer class="bg-dark text-white text-center p-3 mt-5">
