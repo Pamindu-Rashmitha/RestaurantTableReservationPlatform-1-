@@ -10,7 +10,9 @@ import java.util.List;
 import model.Reservation;
 
 public class ReservationManager {
+
     public ReservationManager() {
+
     }
 
     public List<Reservation> getAllReservations(String filePath) {
@@ -77,7 +79,7 @@ public class ReservationManager {
         return true;
     }
 
-    public List<Reservation> getReservationsByUser(String userId, String filePath) {
+    public  List<Reservation> getReservationsByUser(String userId, String filePath) {
         List<Reservation> userReservations = new ArrayList();
 
         for(Reservation reservation : this.getAllReservations(filePath)) {

@@ -105,7 +105,10 @@
         <a href="reviewList.jsp" class="nav-link">Add a review</a>
       </li>
       <li class="nav-item">
-        <a href="login.jsp" class="nav-link">Logout</a>
+        <a href="editProfile.jsp" class="nav-link">Edit Profile</a>
+      </li>
+      <li class="nav-item">
+        <a href="login.jsp" class="nav-link"> Logout</a>
       </li>
     </ul>
   </div>
@@ -125,7 +128,6 @@
   <br>
   <div class="text-center">
     <a href="makeReservation.jsp" class="btn btn-primary btn-custom">Make a Reservation</a>
-    <a href="editProfile.jsp" class="btn btn-primary btn-custom">Edit Profile</a>
   </div>
   <br>
   <!-- Reservations Section -->

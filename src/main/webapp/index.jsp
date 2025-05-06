@@ -63,7 +63,7 @@
     <div class="hero-overlay">
         <h1>Welcome to Our Reservation Platform</h1>
         <p>Reserve your table at your favorite restaurant with ease!</p>
-        <a href="login.jsp" class="btn btn-primary btn-lg">Get Started</a>
+        <a href="howItWorks.jsp" class="btn btn-primary btn-lg">Get Started</a>
     </div>
 </div>
 

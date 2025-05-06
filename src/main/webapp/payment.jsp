@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
+      background: url('assets/res.jpeg') no-repeat center center fixed;
       background-color: #f8f9fa;
       color: #212529;
       font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
@@ -37,6 +38,7 @@
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
     }
     .payment-title {
+      font-family: "Rockwell Extra Bold";
       font-weight: 300;
       margin-bottom: 25px;
       color: #343a40;

@@ -67,5 +67,6 @@ public class ReservationServlet extends HttpServlet {
             request.setAttribute("error", "Failed to make reservation");
             request.getRequestDispatcher("makeReservation.jsp").forward(request, response);
         }
+
     }
 }
