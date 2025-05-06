@@ -8,7 +8,7 @@ public class Reservation {
     private String time;
     private int numberOfGuests;
     private String status;
-    private String type;
+    
 
     public Reservation(String reservationId, String userId, String date, String time, int numberOfGuests, String status) {
         this.reservationId = reservationId;
