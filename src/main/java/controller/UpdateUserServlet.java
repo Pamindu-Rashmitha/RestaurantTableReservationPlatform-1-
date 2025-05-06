@@ -58,7 +58,6 @@ public class UpdateUserServlet extends HttpServlet {
         if (password != null && !password.isEmpty()) {
             updatedUser.setPassword(password); // New password will be hashed in updateUser
         }
-
         boolean updated = userManager.updateUser(updatedUser, userFilePath);
 
         if (updated) {
