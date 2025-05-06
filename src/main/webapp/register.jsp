@@ -32,6 +32,9 @@
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
     }
     .register-title {
+      font-style: normal;
+      font-family: "Rockwell Extra Bold";
+      font-size: 2rem;
       font-weight: 300;
       margin-bottom: 25px;
       color: #343a40;

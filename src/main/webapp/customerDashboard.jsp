@@ -93,9 +93,28 @@
   </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand">Customer Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a href="reviewList.jsp" class="nav-link">Add a review</a>
+      </li>
+      <li class="nav-item">
+        <a href="login.jsp" class="nav-link">Logout</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 <div class="container overlay">
-  <h1 class="dashboard-header">Customer Dashboard</h1>
-  <p class="text-center">Hi, <%= user.getName() %>!</p>
+<div class="text-center">
+  <h1>Hi, <%= user.getName() %>!!</h1>
+</div>
+
   <br>
   <p class="text-center">
     "Welcome to your dashboard! Here, you can easily view and manage your upcoming reservations,
@@ -107,7 +126,6 @@
   <div class="text-center">
     <a href="makeReservation.jsp" class="btn btn-primary btn-custom">Make a Reservation</a>
     <a href="editProfile.jsp" class="btn btn-primary btn-custom">Edit Profile</a>
-    <a href="logout" class="btn btn-danger btn-custom">Logout</a>
   </div>
   <br>
   <!-- Reservations Section -->
@@ -160,10 +178,6 @@
       <p class="text-center">No reservations found.</p>
       <% } %>
     </div>
-  </div>
-  <!-- Add a Review Button -->
-  <div class="text-center mt-3">
-    <a href="review?action=list" class="btn btn-info btn-custom">Add a Review</a>
   </div>
 </div>
 
