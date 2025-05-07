@@ -36,6 +36,7 @@ public class CancelReservationServlet extends HttpServlet {
             }
         }
 
+
         // Save the updated reservations back to the file
         reservationManager.saveReservations(reservations, filePath); // Assume this method exists
 

@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
-      background: #f8f9fa;           /* light gray */
+      background-color: #2c3034;           /* light gray */
       color: #343a40;                /* dark gray for text */
     }
     #how-it-works {
@@ -36,25 +36,6 @@
       background: #007bff;           /* primary blue */
       margin: 12px auto 0;
       border-radius: 2px;
-    }
-
-
-    .card-img-bottom {
-      width: 100%;
-      max-height: 350px;
-      object-fit: cover;
-    }
-
-    .step-card {
-      border: none;
-      border-radius: 8px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .step-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     }
 
     .timeline {
@@ -203,6 +184,9 @@
       items.forEach(i => observer.observe(i));
     });
   </script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
 
