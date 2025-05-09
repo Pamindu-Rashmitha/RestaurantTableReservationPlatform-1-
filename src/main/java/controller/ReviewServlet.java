@@ -24,6 +24,15 @@ public class ReviewServlet extends HttpServlet {
         if ("list".equals(action)) {
             request.setAttribute("reviews", reviewManager.getAllReviews(filePath));
             request.getRequestDispatcher("/reviewList.jsp").forward(request, response);
+        }else if ("delete".equals(action)) {
+            String reviewId = request.getParameter("reviewId");
+            reviewManager.deleteReview(reviewId, filePath);
+            response.sendRedirect("review?action=list");
+        } else if ("edit".equals(action)) {
+            String reviewId = request.getParameter("reviewId");
+            Review review = reviewManager.getReviewById(reviewId, filePath);
+            request.setAttribute("review", review);
+            request.getRequestDispatcher("/editReview.jsp").forward(request, response);
         }
     }
 
@@ -45,6 +54,20 @@ public class ReviewServlet extends HttpServlet {
             reviewManager.addReview(review, filePath);
             response.sendRedirect("review?action=list");
 
+        }else if ("update".equals(action)) {
+            String reviewId = request.getParameter("reviewId");
+            int rating = Integer.parseInt(request.getParameter("rating"));
+            String comment = request.getParameter("comment");
+            String timestamp = LocalDateTime.now().toString();
+
+            Review review = reviewManager.getReviewById(reviewId, filePath);
+            if (review != null) {
+                review.setRating(rating);
+                review.setComment(comment);
+                review.setTimestamp(timestamp);
+                reviewManager.updateReview(review, filePath);
+            }
+            response.sendRedirect("review?action=list");
         }
     }
 }
