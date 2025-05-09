@@ -2,6 +2,7 @@ package model;
 
 public class Review {
     private String reviewId;
+    private String UserId;
     private String userName;
     private String reservationId;
     private int rating;

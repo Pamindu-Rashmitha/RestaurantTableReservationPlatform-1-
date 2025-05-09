@@ -1,6 +1,7 @@
 package model;
 
 public class User {
+    private int userId;
     private String username;
     private String password;
     private String role;
@@ -55,4 +56,11 @@ public class User {
         this.email = email;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int id) {
+        this.userId = id;
+    }
 }

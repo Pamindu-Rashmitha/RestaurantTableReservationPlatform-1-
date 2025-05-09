@@ -34,6 +34,16 @@ public class ReviewManager {
         return reviews;
     }
 
+    public Review getReviewById(String reviewId, String filePath) {
+        List<Review> reviews = getAllReviews(filePath);
+        for (Review review : reviews) {
+            if (review.getReviewId().equals(reviewId)) {
+                return review;
+            }
+        }
+        return null;
+    }
+
     public void addReview(Review review, String filePath) {
         List<Review> reviews = getAllReviews(filePath);
         reviews.add(review);
