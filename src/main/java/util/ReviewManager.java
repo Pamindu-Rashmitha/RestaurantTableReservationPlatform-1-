@@ -40,16 +40,6 @@ public class ReviewManager {
         saveReviews(reviews, filePath);
     }
 
-
-    public boolean deleteReview(String reviewId, String filePath) {
-        List<Review> reviews = getAllReviews(filePath);
-        boolean removed = reviews.removeIf(review -> review.getReviewId().equals(reviewId));
-        if (removed) {
-            saveReviews(reviews, filePath);
-        }
-        return removed;
-    }
-
     private void saveReviews(List<Review> reviews, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (Review review : reviews) {
@@ -62,5 +52,33 @@ public class ReviewManager {
             e.printStackTrace();
         }
     }
+
+    public boolean updateReview(Review updatedReview, String filePath) {
+        List<Review> reviews = getAllReviews(filePath);
+        boolean found = false;
+        for (int i = 0; i < reviews.size(); i++) {
+            if (reviews.get(i).getReviewId().equals(updatedReview.getReviewId())) {
+                reviews.set(i, updatedReview);
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            saveReviews(reviews, filePath);
+        }
+        return found;
+    }
+
+
+    public boolean deleteReview(String reviewId, String filePath) {
+        List<Review> reviews = getAllReviews(filePath);
+        boolean removed = reviews.removeIf(review -> review.getReviewId().equals(reviewId));
+        if (removed) {
+            saveReviews(reviews, filePath);
+        }
+        return removed;
+    }
+
+
 
 }
