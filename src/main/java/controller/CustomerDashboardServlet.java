@@ -31,7 +31,7 @@ public class CustomerDashboardServlet extends HttpServlet {
             return;
         }
 
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         List<Reservation> userReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
         request.setAttribute("reservations", userReservations);
         request.getRequestDispatcher("customerDashboard.jsp").forward(request, response);

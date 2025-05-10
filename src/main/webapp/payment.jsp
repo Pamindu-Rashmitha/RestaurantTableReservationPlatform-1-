@@ -10,7 +10,7 @@
   }
   String reservationId = request.getParameter("reservationId");
   ReservationManager reservationManager = new ReservationManager();
-  String reservationFilePath = application.getRealPath("/WEB-INF/reservations.txt");
+  String reservationFilePath = application.getRealPath("/data/reservations.txt");
   Reservation reservation = reservationManager.getReservationById(reservationId, reservationFilePath);
   if (reservation == null || !reservation.getUserId().equals(user.getUsername())) {
     response.sendRedirect("customerDashboard.jsp");

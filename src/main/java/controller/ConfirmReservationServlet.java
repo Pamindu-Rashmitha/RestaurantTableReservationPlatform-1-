@@ -32,7 +32,7 @@ public class ConfirmReservationServlet extends HttpServlet {
         }
 
         String reservationId = request.getParameter("reservationId");
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         Reservation reservation = reservationManager.getReservationById(reservationId, filePath);
         if (reservation == null || !"Paid".equals(reservation.getStatus())) {
             response.sendRedirect("adminDashboard");

@@ -52,7 +52,7 @@ public class ReservationServlet extends HttpServlet {
         );
 
         // Define the file path for storing reservations
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
 
         // Attempt to add the reservation
         if (reservationManager.addReservation(reservation, filePath)) {

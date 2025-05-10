@@ -20,7 +20,7 @@ public class ReviewServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        String filePath = getServletContext().getRealPath("/WEB-INF/reviews.txt");
+        String filePath = getServletContext().getRealPath("/data/reviews.txt");
 
         if ("list".equals(action)) {
             request.setAttribute("reviews", reviewManager.getAllReviews(filePath));
@@ -69,7 +69,7 @@ public class ReviewServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        String filePath = getServletContext().getRealPath("/WEB-INF/reviews.txt");
+        String filePath = getServletContext().getRealPath("/data/reviews.txt");
         User currentUser = (User) request.getSession().getAttribute("user");
 
         // Check authentication
