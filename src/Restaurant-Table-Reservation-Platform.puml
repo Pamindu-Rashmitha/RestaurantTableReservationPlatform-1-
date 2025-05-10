@@ -1,0 +1,105 @@
+@startuml
+class User{
+    - int userId
+    - String username
+    - String password
+    - String role
+    - String name
+    - String email
+
+    + String getUsername()
+    + void setUsername(String username)
+    + String getPassword()
+    + void setPassword(String password)
+    + String getRole()
+    + void setRole(String role)
+    + String getName()
+    + void setName(String name)
+    + String getEmail()
+    + void setEmail(String email)
+    + int getUserId()
+    + void setUserId(int id)
+}
+
+class Reservation{
+      -String reservationId
+      - String userId
+      - String date
+      - String time
+      - int numberOfGuests
+      - String status
+
+      + String getReservationId()
+      + void setReservationId(String reservationId)
+      + String getUserId()
+      + void setUserId(String userId)
+      + String getDate()
+      + void setDate(String date)
+      + String getTime()
+      + void setTime(String time)
+      + int getNumberOfGuests()
+      + void setNumberOfGuests(int numberOfGuests)
+      + String getStatus()
+      + void setStatus(String status)
+
+}
+
+class ReservationRequest {
+    + String customerName
+    + int partySize
+    + String time
+
+    +String toString()
+
+}
+
+class Payment {
+
+   - String paymentId
+   - String reservationId
+   - String userId
+   - double amount
+   - String paymentMethod
+   - String status
+
+   + String getPaymentId()
+   + String getReservationId()
+   + String getUserId()
+   + double getAmount()
+   + String getPaymentMethod()
+   + String getStatus()
+   + void setStatus(String status)
+
+}
+
+class Review {
+
+   - String reviewId
+   - String userName
+   - String reservationId
+   - int rating
+   - String comment
+   - String timestamp
+
+   + String getReviewId()
+   + String getUserId()
+   + String getReservationId()
+   + int getRating()
+   + String getComment()
+   + String getTimestamp()
+   + void setRating(int rating)
+   + void setComment(String comment)
+   + void setTimestamp(String timestamp)
+
+}
+
+ClassUser "1" *-- "many" ClassPayment : contains
+ClassUser "1" *-- "many" ClassReview : contains
+ClassUser "1" *-- "many" ClassReservation : contains
+ClassReservation "1" *-- "many" ClassPayment : contains
+ClassReservation "1" *-- "many" ClassReview : contains
+
+
+
+
+@enduml
