@@ -94,7 +94,7 @@
       <textarea name="comment" class="form-control" required><%= review.getComment() %></textarea>
     </div>
     <button type="submit" class="btn btn-warning">Update</button>
-    <a href="reviews.jsp" class="btn btn-secondary">Cancel</a>
+    <a href="reviewList.jsp" class="btn btn-secondary">Cancel</a>
   </form>
 </div>
 </body>
