@@ -90,7 +90,7 @@
     <li><strong>Rating:</strong> <%= review.getRating() %></li>
     <li><strong>Comment:</strong> <%= review.getComment() %></li>
   </ul>
-  <form action="review" method="post">
+  <form action="deleteReview" method="post">
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="reviewId" value="<%= review.getReviewId() %>">
     <button type="submit" class="btn btn-danger">Confirm Delete</button>

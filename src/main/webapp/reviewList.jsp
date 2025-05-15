@@ -58,7 +58,7 @@
 
   <% if (session.getAttribute("user") != null) { %>
   <!-- Create Review Form -->
-  <form action="review" method="post" class="mb-4">
+  <form action="createReview" method="post" class="mb-4">
     <input type="hidden" name="action" value="create">
     <div class="form-group">
       <label>User Name</label>
@@ -124,8 +124,8 @@
             <td class="align-middle"><%= review.getComment() %></td>
             <td class="align-middle"><%= review.getTimestamp() %></td>
             <td class="align-middle">
-              <a href="review?action=edit&reviewId=<%= review.getReviewId() %>" class="btn btn-secondary btn-sm">Edit</a>
-              <a href="review?action=confirmDelete&reviewId=<%= review.getReviewId() %>" class="btn btn-danger btn-sm">Delete</a>
+              <a href="updateReview?reviewId=<%= review.getReviewId() %>" class="btn btn-secondary btn-sm">Edit</a>
+              <a href="deleteReview?reviewId=<%= review.getReviewId() %>" class="btn btn-danger btn-sm">Delete</a>
             </td>
           </tr>
           <% } %>

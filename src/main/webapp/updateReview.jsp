@@ -82,7 +82,7 @@
 <body>
 <div class="container mt-4">
   <h2>Edit Review</h2>
-  <form action="review" method="post">
+  <form action="updateReview" method="post">
     <input type="hidden" name="action" value="update">
     <input type="hidden" name="reviewId" value="<%= review.getReviewId() %>">
     <div class="form-group">
