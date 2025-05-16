@@ -46,7 +46,7 @@ public class UpdateUserServlet extends HttpServlet {
         }
 
         // Check if email is already used by another user
-        String userFilePath = getServletContext().getRealPath("/WEB-INF/users.txt");
+        String userFilePath = getServletContext().getRealPath("/data/users.txt");
         if (!email.equals(user.getEmail()) && userManager.emailExists(email, userFilePath)) {
             request.setAttribute("error", "Email is already in use by another user.");
             request.getRequestDispatcher("editProfile.jsp").forward(request, response);

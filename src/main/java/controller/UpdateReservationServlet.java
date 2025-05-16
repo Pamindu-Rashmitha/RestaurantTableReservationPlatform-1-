@@ -36,7 +36,7 @@ public class UpdateReservationServlet extends HttpServlet {
         String time = request.getParameter("time");
         int numberOfGuests = Integer.parseInt(request.getParameter("numberOfGuests"));
 
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         Reservation reservation = reservationManager.getReservationById(reservationId, filePath);
         if (reservation == null || !reservation.getUserId().equals(user.getUsername())) {
             response.sendRedirect("customerDashboard.jsp");

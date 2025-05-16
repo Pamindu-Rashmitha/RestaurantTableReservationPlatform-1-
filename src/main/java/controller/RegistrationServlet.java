@@ -28,7 +28,7 @@ public class RegistrationServlet extends HttpServlet {
         String name = request.getParameter("name").trim();
         String email = request.getParameter("email").trim();
 
-        String filePath = getServletContext().getRealPath("/WEB-INF/users.txt");
+        String filePath = getServletContext().getRealPath("/data/users.txt");
 
         // Validate password strength
         String passwordError = validatePassword(password);

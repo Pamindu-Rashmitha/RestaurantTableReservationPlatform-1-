@@ -27,7 +27,7 @@ public class EditReservationServlet extends HttpServlet {
             return;
         }
 
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         Reservation reservation = reservationManager.getReservationById(reservationId, filePath);
         if (reservation == null) {
             response.sendRedirect("customerDashboard.jsp");

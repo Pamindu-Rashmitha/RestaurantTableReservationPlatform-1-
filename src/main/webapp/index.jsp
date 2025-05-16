@@ -52,7 +52,7 @@
                 <a class="nav-link" href="register.jsp">Register</a>
             </li>
             <li class="nav-item">
-                <a href="review?action=list" class="nav-link">Reviews</a>
+                <a href="listReviews" class="nav-link">Reviews</a>
             </li>
         </ul>
     </div>

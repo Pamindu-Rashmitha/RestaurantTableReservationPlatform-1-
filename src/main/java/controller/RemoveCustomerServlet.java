@@ -34,8 +34,8 @@ public class RemoveCustomerServlet extends HttpServlet {
         }
 
         String username = request.getParameter("username");
-        String userFilePath = getServletContext().getRealPath("/WEB-INF/users.txt");
-        String reservationFilePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String userFilePath = getServletContext().getRealPath("/data/users.txt");
+        String reservationFilePath = getServletContext().getRealPath("/data/reservations.txt");
 
         // Remove the user
         boolean userRemoved = userManager.removeUser(username, userFilePath);

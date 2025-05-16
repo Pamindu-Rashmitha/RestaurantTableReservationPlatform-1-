@@ -57,8 +57,8 @@ public class ProcessPaymentServlet extends HttpServlet {
             }
         }
 
-        String paymentFilePath = getServletContext().getRealPath("/WEB-INF/payments.txt");
-        String reservationFilePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String paymentFilePath = getServletContext().getRealPath("/data/payments.txt");
+        String reservationFilePath = getServletContext().getRealPath("/data/reservations.txt");
 
         // Update the reservation with the new number of guests
         Reservation reservation = reservationManager.getReservationById(reservationId, reservationFilePath);

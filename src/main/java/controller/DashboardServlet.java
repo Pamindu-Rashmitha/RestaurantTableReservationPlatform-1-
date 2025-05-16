@@ -31,7 +31,7 @@ public class DashboardServlet extends HttpServlet {
             return;
         }
 
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         List<Reservation> userReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
         request.setAttribute("reservations", userReservations);
 

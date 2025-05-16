@@ -32,7 +32,7 @@ public class CancelReservationAdminServlet extends HttpServlet {
         }
 
         String reservationId = request.getParameter("reservationId");
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         Reservation reservation = reservationManager.getReservationById(reservationId, filePath);
         if (reservation == null || "Cancelled".equals(reservation.getStatus())) {
             response.sendRedirect("adminDashboard");

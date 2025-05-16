@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String filePath = getServletContext().getRealPath("/WEB-INF/users.txt");
+        String filePath = getServletContext().getRealPath("/data/users.txt");
 
         User user = userManager.getUserByUsername(username, filePath);
         if (user != null && user.getPassword().equals(password)) {
