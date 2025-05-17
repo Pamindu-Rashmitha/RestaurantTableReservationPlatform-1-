@@ -1,142 +1,163 @@
 package util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import model.Reservation;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ReservationManager {
-
     public ReservationManager() {
-
     }
 
     public List<Reservation> getAllReservations(String filePath) {
-        List<Reservation> reservations = new ArrayList();
+        Reservation[] reservations = loadReservationsFromFile(filePath);
+        reservations = mergeSortReservations(reservations);
+        // Convert back to List for compatibility with existing code
+        List<Reservation> result = new ArrayList<>();
+        for (Reservation res : reservations) {
+            result.add(res);
+        }
+        return result;
+    }
 
+    private Reservation[] loadReservationsFromFile(String filePath) {
+        List<Reservation> tempList = new ArrayList<>();
         String line;
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 6) {
                     Reservation reservation = new Reservation(parts[0], parts[1], parts[2], parts[3], Integer.parseInt(parts[4]), parts[5]);
-                    reservations.add(reservation);
+                    tempList.add(reservation);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return this.mergeSortReservations(reservations);
-    }
-
-    public List<Reservation> mergeSortReservations(List<Reservation> reservations) {
-        if (reservations.size() <= 1) {
-            return reservations;
-        } else {
-            int mid = reservations.size() / 2;
-            List<Reservation> left = this.mergeSortReservations(new ArrayList(reservations.subList(0, mid)));
-            List<Reservation> right = this.mergeSortReservations(new ArrayList(reservations.subList(mid, reservations.size())));
-            return this.merge(left, right);
+        // Convert List to array
+        Reservation[] reservations = new Reservation[tempList.size()];
+        for (int i = 0; i < tempList.size(); i++) {
+            reservations[i] = tempList.get(i);
         }
-    }
-
-    private List<Reservation> merge(List<Reservation> left, List<Reservation> right) {
-        List<Reservation> merged = new ArrayList();
-        int i = 0;
-        int j = 0;
-
-        while(i < left.size() && j < right.size()) {
-            if ((new ReservationTimeComparator()).compare((Reservation)left.get(i), (Reservation)right.get(j)) <= 0) {
-                merged.add((Reservation)left.get(i));
-                ++i;
-            } else {
-                merged.add((Reservation)right.get(j));
-                ++j;
-            }
-        }
-
-        merged.addAll(left.subList(i, left.size()));
-        merged.addAll(right.subList(j, right.size()));
-        return merged;
+        return reservations;
     }
 
     public boolean addReservation(Reservation reservation, String filePath) {
-        List<Reservation> reservations = this.getAllReservations(filePath);
-
-        for(Reservation r : reservations) {
+        Reservation[] reservations = loadReservationsFromFile(filePath);
+        for (Reservation r : reservations) {
             if (r.getReservationId().equals(reservation.getReservationId())) {
                 return false;
             }
         }
-
-        reservations.add(reservation);
-        this.saveReservations(reservations, filePath);
+        Reservation[] updatedReservations = new Reservation[reservations.length + 1];
+        System.arraycopy(reservations, 0, updatedReservations, 0, reservations.length);
+        updatedReservations[reservations.length] = reservation;
+        saveReservations(updatedReservations, filePath);
         return true;
     }
 
-    public  List<Reservation> getReservationsByUser(String userId, String filePath) {
-        List<Reservation> userReservations = new ArrayList();
-
-        for(Reservation reservation : this.getAllReservations(filePath)) {
-            if (reservation.getUserId().equals(userId)) {
-                userReservations.add(reservation);
-            }
-        }
-
-        return userReservations;
-    }
-
-    public void saveReservations(List<Reservation> reservations, String filePath) {
+    public void saveReservations(Reservation[] reservations, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            for(Reservation reservation : reservations) {
-                String var10001 = reservation.getReservationId();
-                writer.write(var10001 + "," + reservation.getUserId() + "," + reservation.getDate() + "," + reservation.getTime() + "," + reservation.getNumberOfGuests() + "," + reservation.getStatus());
+            for (Reservation reservation : reservations) {
+                writer.write(reservation.getReservationId() + "," + reservation.getUserId() + "," +
+                        reservation.getDate() + "," + reservation.getTime() + "," +
+                        reservation.getNumberOfGuests() + "," + reservation.getStatus());
                 writer.newLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public List<Reservation> getReservationsByUser(String userId, String filePath) {
+        Reservation[] allReservations = loadReservationsFromFile(filePath);
+        List<Reservation> userReservations = new ArrayList<>();
+        for (Reservation reservation : allReservations) {
+            if (reservation.getUserId().equals(userId)) {
+                userReservations.add(reservation);
+            }
+        }
+        return userReservations;
     }
 
     public Reservation getReservationById(String reservationId, String filePath) {
-        for(Reservation r : this.getAllReservations(filePath)) {
+        Reservation[] allReservations = loadReservationsFromFile(filePath);
+        for (Reservation r : allReservations) {
             if (r.getReservationId().equals(reservationId)) {
                 return r;
             }
         }
-
         return null;
     }
 
-    public boolean updateReservation(Reservation updatedRes, String filePath) {
-        List<Reservation> reservations = this.getAllReservations(filePath);
+    public Reservation[] mergeSortReservations(Reservation[] reservations) {
+        if (reservations == null || reservations.length <= 1) {
+            return reservations;
+        }
+        int mid = reservations.length / 2;
+        Reservation[] left = new Reservation[mid];
+        Reservation[] right = new Reservation[reservations.length - mid];
+        // Copy elements to left and right arrays
+        System.arraycopy(reservations, 0, left, 0, mid);
+        System.arraycopy(reservations, mid, right, 0, reservations.length - mid);
+        left = mergeSortReservations(left);
+        right = mergeSortReservations(right);
+        return merge(left, right);
+    }
 
-        for(int i = 0; i < reservations.size(); ++i) {
-            if (((Reservation)reservations.get(i)).getReservationId().equals(updatedRes.getReservationId())) {
-                reservations.set(i, updatedRes);
-                this.saveReservations(reservations, filePath);
-                return true;
+    private Reservation[] merge(Reservation[] left, Reservation[] right) {
+        Reservation[] merged = new Reservation[left.length + right.length];
+        int i = 0, j = 0, k = 0;
+        ReservationTimeComparator comparator = new ReservationTimeComparator();
+
+        while (i < left.length && j < right.length) {
+            if (comparator.compare(left[i], right[j]) <= 0) {
+                merged[k++] = left[i++];
+            } else {
+                merged[k++] = right[j++];
             }
         }
 
+        while (i < left.length) {
+            merged[k++] = left[i++];
+        }
+
+        while (j < right.length) {
+            merged[k++] = right[j++];
+        }
+
+        return merged;
+    }
+
+    public boolean updateReservation(Reservation updatedRes, String filePath) {
+        Reservation[] reservations = loadReservationsFromFile(filePath);
+        for (int i = 0; i < reservations.length; i++) {
+            if (reservations[i].getReservationId().equals(updatedRes.getReservationId())) {
+                reservations[i] = updatedRes;
+                saveReservations(reservations, filePath);
+                return true;
+            }
+        }
         return false;
     }
 
     public boolean removeReservationsByUser(String userId, String filePath) {
-        List<Reservation> reservations = this.getAllReservations(filePath);
-        boolean removed = reservations.removeIf((reservation) -> reservation.getUserId().equals(userId));
-        if (removed) {
-            this.saveReservations(reservations, filePath);
+        Reservation[] reservations = loadReservationsFromFile(filePath);
+        int count = 0;
+        for (Reservation reservation : reservations) {
+            if (!reservation.getUserId().equals(userId)) {
+                count++;
+            }
         }
-
-        return removed;
+        Reservation[] newReservations = new Reservation[count];
+        int index = 0;
+        for (Reservation reservation : reservations) {
+            if (!reservation.getUserId().equals(userId)) {
+                newReservations[index++] = reservation;
+            }
+        }
+        saveReservations(newReservations, filePath);
+        return reservations.length != newReservations.length;
     }
-
-
 }
