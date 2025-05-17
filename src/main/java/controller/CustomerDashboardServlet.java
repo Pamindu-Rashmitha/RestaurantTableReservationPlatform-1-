@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/customerDashboard")
@@ -31,9 +32,27 @@ public class CustomerDashboardServlet extends HttpServlet {
             return;
         }
 
-        String filePath = getServletContext().getRealPath("/data/reservations.txt");
-        List<Reservation> userReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
-        request.setAttribute("reservations", userReservations);
+        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+
+        // Get confirmed reservations from the file
+        List<Reservation> confirmedReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
+
+        // Get all pending reservations from the queue and filter by current user
+        Reservation[] allPending = reservationManager.getReservationQueue().toArray();
+        List<Reservation> userPending = new ArrayList<>();
+        for (Reservation res : allPending) {
+            if (res.getUserId().equals(user.getUsername())) {
+                userPending.add(res);
+            }
+        }
+
+        // Combine confirmed and pending reservations
+        List<Reservation> allUserReservations = new ArrayList<>();
+        allUserReservations.addAll(confirmedReservations);
+        allUserReservations.addAll(userPending);
+
+        // Set the combined list in the request
+        request.setAttribute("reservations", allUserReservations);
         request.getRequestDispatcher("customerDashboard.jsp").forward(request, response);
     }
 }
