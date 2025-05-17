@@ -21,26 +21,32 @@ public class CancelReservationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         String reservationId = request.getParameter("reservationId");
-        String filePath = getServletContext().getRealPath("/data/reservations.txt");
+        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
 
-        // Fetch all reservations
-        List<Reservation> reservations = reservationManager.getAllReservations(filePath);
+        // Load all reservations from the file
+        List<Reservation> reservationsList = reservationManager.getAllReservations(filePath);
+        Reservation[] reservations = new Reservation[reservationsList.size()];
+        for (int i = 0; i < reservationsList.size(); i++) {
+            reservations[i] = reservationsList.get(i);
+        }
 
         // Update the status of the matching reservation
+        boolean found = false;
         for (Reservation reservation : reservations) {
             if (reservation.getReservationId().equals(reservationId)) {
                 reservation.setStatus("Cancelled");
+                found = true;
                 break;
             }
         }
 
+        // Save the updated reservations back to the file if found
+        if (found) {
+            reservationManager.saveReservations(reservations, filePath);
+        }
 
-        // Save the updated reservations back to the file
-        reservationManager.saveReservations(reservations, filePath); // Assume this method exists
-
-        // Redirect back to the dashboard
-        response.sendRedirect("customerDashboard.jsp");
+        // Redirect back to the customer dashboard servlet
+        response.sendRedirect("customerDashboard");
     }
 }
