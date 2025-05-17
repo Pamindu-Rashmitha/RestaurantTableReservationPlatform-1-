@@ -1,8 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.User" %>
 <%@ page import="model.Reservation" %>
-<%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
 <%
   User user = (User) session.getAttribute("user");
   if (user == null || !"admin".equals(user.getRole())) {
@@ -10,6 +10,7 @@
     return;
   }
   List<Reservation> allReservations = (List<Reservation>) request.getAttribute("allReservations");
+  Reservation[] pendingReservations = (Reservation[]) request.getAttribute("pendingReservations");
   List<User> allUsers = (List<User>) request.getAttribute("allUsers");
   List<User> customers = new ArrayList<>();
   if (allUsers != null) {
@@ -26,77 +27,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    body {
-      background: url('assets/res.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      color: #212529;
-      margin: 0;
-      padding: 0;
-    }
-    .overlay {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-      margin-top: 30px;
-      margin-bottom: 30px;
-    }
-    .dashboard-header {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 2.5rem;
-      color: #343a40;
-      font-weight: bold;
-    }
-    .card {
-      border: none;
-      margin-bottom: 30px;
-    }
-    .card-header {
-      background: linear-gradient(135deg, #6c63ff, #4834d4);
-      color: #fff;
-      font-weight: 500;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-    }
-    .btn-custom {
-      transition: all 0.3s ease;
-    }
-    .btn-custom:hover, .btn-custom:focus {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .table-hover tbody tr:hover {
-      background-color: rgba(241, 241, 241, 0.8);
-    }
-    .modal-content {
-      border-radius: 10px;
-    }
-    @media (max-width: 768px) {
-      .dashboard-header {
-        font-size: 2rem;
-      }
-      .overlay {
-        padding: 20px;
-      }
-      .card-header {
-        font-size: 1.1rem;
-      }
-    }
-    @media (max-width: 576px) {
-      .dashboard-header {
-        font-size: 1.8rem;
-      }
-      .overlay {
-        padding: 15px;
-      }
-      .table-responsive {
-        font-size: 0.9rem;
-      }
-    }
-  </style>
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/assets/favicon-16x16.png">
+  <link rel="manifest" href="assets/assets/site.webmanifest">
+  <link rel="stylesheet" href="assets/css/adminDashboard.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -113,6 +48,7 @@
     </ul>
   </div>
 </nav>
+
 <div class="container overlay">
   <h1 class="dashboard-header">Welcome, <%= user.getName() %>!</h1>
   <br>
@@ -154,17 +90,57 @@
     </div>
   </div>
 
-  <!-- Reservations Section -->
+  <!-- Pending Reservations Section -->
+  <div class="card">
+    <div class="card-header">Pending Reservations</div>
+    <div class="card-body">
+      <% if (pendingReservations != null && pendingReservations.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+          <thead class="thead-dark">
+          <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Guests</th>
+            <th>Status</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% for (Reservation reservation : pendingReservations) { %>
+          <tr>
+            <td><%= reservation.getReservationId() %></td>
+            <td><%= reservation.getUserId() %></td>
+            <td><%= reservation.getDate() %></td>
+            <td><%= reservation.getTime() %></td>
+            <td><%= reservation.getNumberOfGuests() %></td>
+            <td><%= reservation.getStatus() %></td>
+          </tr>
+          <% } %>
+          </tbody>
+        </table>
+      </div>
+      <form action="adminDashboard" method="post">
+        <input type="hidden" name="action" value="processQueue">
+        <button type="submit" class="btn btn-success mt-3">Process Next Reservation</button>
+      </form>
+      <% } else { %>
+      <p>No pending reservations.</p>
+      <% } %>
+      <% if (request.getAttribute("message") != null) { %>
+      <p class="mt-3"><%= request.getAttribute("message") %></p>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- All Reservations Section -->
   <div class="card">
     <div class="card-header">All Reservations</div>
     <div class="card-body">
-
-      <!-- Buttons Row -->
       <div class="mb-3 d-flex flex-wrap gap-2">
         <a href="adminDashboard" class="btn btn-info btn-custom mr-2">Refresh Reservations</a>
-
       </div>
-
       <% if (allReservations != null && !allReservations.isEmpty()) { %>
       <form action="adminDashboard" method="get" class="mb-3">
         <div class="row">
@@ -223,7 +199,6 @@
       <% } %>
     </div>
   </div>
-
 </div>
 
 <!-- Modals -->
@@ -268,7 +243,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
