@@ -1,28 +1,28 @@
 package controller;
 
-import model.Reservation;
-import model.User;
-import util.ReservationManager;
-import util.UserManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.Reservation;
+import model.User;
+import util.ReservationManager;
+import util.UserManager;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/adminDashboard")
 public class AdminDashboardServlet extends HttpServlet {
-    private ReservationManager reservationManager;
     private UserManager userManager;
+    private ReservationManager reservationManager;
 
     @Override
     public void init() throws ServletException {
-        reservationManager = new ReservationManager();
         userManager = new UserManager();
+        reservationManager = new ReservationManager();
     }
 
     @Override
@@ -35,8 +35,8 @@ public class AdminDashboardServlet extends HttpServlet {
             return;
         }
 
-        // Load reservations from file
-        String filePath = getServletContext().getRealPath("/data/reservations.txt");
+        // Load reservations from reservations.txt
+        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
         List<Reservation> allReservations = reservationManager.getAllReservations(filePath);
 
         // Retrieve search parameter and filter reservations if needed
@@ -56,12 +56,31 @@ public class AdminDashboardServlet extends HttpServlet {
         }
         request.setAttribute("allReservations", allReservations);
 
-        // Load users from file
-        String userFilePath = getServletContext().getRealPath("/data/users.txt");
-        List<User> allUsers = userManager.getAllUsers(userFilePath);
+        // Load pending reservations from queue
+        Reservation[] pendingReservations = reservationManager.getReservationQueue().toArray();
+        request.setAttribute("pendingReservations", pendingReservations);
+
+        // Load users from users.txt
+        String userFilepath = getServletContext().getRealPath("/WEB-INF/users.txt");
+        List<User> allUsers = userManager.getAllUsers(userFilepath);
         request.setAttribute("allUsers", allUsers);
 
-        // Forward to adminDashboard.jsp
+        // Forward to admin dashboard
         request.getRequestDispatcher("adminDashboard.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String action = request.getParameter("action");
+        if ("processQueue".equals(action)) {
+            boolean processed = reservationManager.processNextReservation();
+            if (processed) {
+                request.setAttribute("message", "Reservation processed successfully.");
+            } else {
+                request.setAttribute("message", "No reservations to process.");
+            }
+        }
+        doGet(request, response); // Refresh the page
     }
 }
