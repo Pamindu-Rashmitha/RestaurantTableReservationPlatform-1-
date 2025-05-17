@@ -1,6 +1,7 @@
 package controller;
 
 import model.Reservation;
+import util.ReservationManager;
 import model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,28 +9,28 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import util.ReservationManager;
-
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.List;
 
 @WebServlet("/reservation")
 public class ReservationServlet extends HttpServlet {
+    private ReservationManager reservationManager;
+
+    @Override
+    public void init() throws ServletException {
+        reservationManager = new ReservationManager();
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Check if the user is logged in
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
-        }
-
-        // Retrieve or create ReservationManager from session
-        ReservationManager reservationManager = (ReservationManager) session.getAttribute("reservationManager");
-        if (reservationManager == null) {
-            reservationManager = new ReservationManager();
-            session.setAttribute("reservationManager", reservationManager);
         }
 
         // Generate a unique reservation ID server-side
@@ -50,14 +51,23 @@ public class ReservationServlet extends HttpServlet {
                 "Pending"
         );
 
-        // Attempt to add the reservation to the queue
+        // Define the file path for storing reservations
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
+
+        // Attempt to add the reservation
         if (reservationManager.addReservation(reservation, filePath)) {
-            // Redirect to customer dashboard to refresh with queue data
-            response.sendRedirect("customerDashboard");
+            // Fetch the user's reservations
+            List<Reservation> userReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
+            // Set the reservations as a request attribute
+            request.setAttribute("reservations", userReservations);
+            // Forward to the customer dashboard
+            request.getRequestDispatcher("customerDashboard.jsp").forward(request, response);
         } else {
+            // Set an error attribute and forward back to the reservation page
             request.setAttribute("error", "Failed to make reservation");
             request.getRequestDispatcher("makeReservation.jsp").forward(request, response);
         }
+
+
     }
 }

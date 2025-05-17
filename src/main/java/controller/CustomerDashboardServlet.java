@@ -1,20 +1,26 @@
 package controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import model.Reservation;
 import model.User;
 import util.ReservationManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/customerDashboard")
 public class CustomerDashboardServlet extends HttpServlet {
+    private ReservationManager reservationManager;
+
+    @Override
+    public void init() throws ServletException {
+        reservationManager = new ReservationManager();
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -25,28 +31,9 @@ public class CustomerDashboardServlet extends HttpServlet {
             return;
         }
 
-        ReservationManager reservationManager = (ReservationManager) session.getAttribute("reservationManager");
-        if (reservationManager == null) {
-            reservationManager = new ReservationManager();
-            session.setAttribute("reservationManager", reservationManager);
-        }
-
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
-
-        List<Reservation> confirmedReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
-        Reservation[] allPending = reservationManager.getReservationQueue().toArray();
-        List<Reservation> userPending = new ArrayList<>();
-        for (Reservation res : allPending) {
-            if (res.getUserId().equals(user.getUsername())) {
-                userPending.add(res);
-            }
-        }
-
-        List<Reservation> allUserReservations = new ArrayList<>();
-        allUserReservations.addAll(confirmedReservations);
-        allUserReservations.addAll(userPending);
-
-        request.setAttribute("reservations", allUserReservations);
+        List<Reservation> userReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
+        request.setAttribute("reservations", userReservations);
         request.getRequestDispatcher("customerDashboard.jsp").forward(request, response);
     }
 }

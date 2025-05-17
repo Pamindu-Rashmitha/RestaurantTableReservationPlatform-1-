@@ -1,25 +1,27 @@
 package controller;
 
+import model.Reservation;
+import model.User;
+import util.ReservationManager;
+import util.UserManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Reservation;
-import model.User;
-import util.ReservationManager;
-import util.UserManager;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 @WebServlet("/adminDashboard")
 public class AdminDashboardServlet extends HttpServlet {
+    private ReservationManager reservationManager;
     private UserManager userManager;
 
     @Override
     public void init() throws ServletException {
+        reservationManager = new ReservationManager();
         userManager = new UserManager();
     }
 
@@ -33,15 +35,11 @@ public class AdminDashboardServlet extends HttpServlet {
             return;
         }
 
-        ReservationManager reservationManager = (ReservationManager) session.getAttribute("reservationManager");
-        if (reservationManager == null) {
-            reservationManager = new ReservationManager();
-            session.setAttribute("reservationManager", reservationManager);
-        }
-
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        // Load reservations from file
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         List<Reservation> allReservations = reservationManager.getAllReservations(filePath);
 
+        // Retrieve search parameter and filter reservations if needed
         String searchTerm = request.getParameter("searchTerm");
         if (searchTerm != null && !searchTerm.trim().isEmpty()) {
             String lowerCaseSearch = searchTerm.toLowerCase();
@@ -58,35 +56,12 @@ public class AdminDashboardServlet extends HttpServlet {
         }
         request.setAttribute("allReservations", allReservations);
 
-        Reservation[] pendingReservations = reservationManager.getReservationQueue().toArray();
-        request.setAttribute("pendingReservations", pendingReservations);
-
-        String userFilepath = getServletContext().getRealPath("/WEB-INF/users.txt");
-        List<User> allUsers = userManager.getAllUsers(userFilepath);
+        // Load users from file
+        String userFilePath = getServletContext().getRealPath("/data/users.txt");
+        List<User> allUsers = userManager.getAllUsers(userFilePath);
         request.setAttribute("allUsers", allUsers);
 
+        // Forward to adminDashboard.jsp
         request.getRequestDispatcher("adminDashboard.jsp").forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        ReservationManager reservationManager = (ReservationManager) session.getAttribute("reservationManager");
-        if (reservationManager == null) {
-            reservationManager = new ReservationManager();
-            session.setAttribute("reservationManager", reservationManager);
-        }
-
-        String action = request.getParameter("action");
-        if ("processQueue".equals(action)) {
-            boolean processed = reservationManager.processNextReservation();
-            if (processed) {
-                request.setAttribute("message", "Reservation processed successfully.");
-            } else {
-                request.setAttribute("message", "No reservations to process.");
-            }
-        }
-        doGet(request, response); // Refresh the page
     }
 }
