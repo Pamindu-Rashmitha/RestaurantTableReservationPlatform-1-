@@ -36,7 +36,7 @@ public class AdminDashboardServlet extends HttpServlet {
         }
 
         // Load reservations from reservations.txt
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         List<Reservation> allReservations = reservationManager.getAllReservations(filePath);
 
         // Retrieve search parameter and filter reservations if needed
@@ -61,7 +61,7 @@ public class AdminDashboardServlet extends HttpServlet {
         request.setAttribute("pendingReservations", pendingReservations);
 
         // Load users from users.txt
-        String userFilepath = getServletContext().getRealPath("/WEB-INF/users.txt");
+        String userFilepath = getServletContext().getRealPath("/data/users.txt");
         List<User> allUsers = userManager.getAllUsers(userFilepath);
         request.setAttribute("allUsers", allUsers);
 

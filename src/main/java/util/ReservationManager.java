@@ -12,7 +12,7 @@ public class ReservationManager {
 
     public ReservationManager() {
         this.reservationQueue = new ReservationQueue();
-        this.filePath = "WEB-INF/reservations.txt";
+        this.filePath = "/data/reservations.txt";
     }
 
     public List<Reservation> getAllReservations(String filePath) {
