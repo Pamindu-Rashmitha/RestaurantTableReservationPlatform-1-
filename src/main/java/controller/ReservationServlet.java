@@ -51,7 +51,7 @@ public class ReservationServlet extends HttpServlet {
         );
 
         // Attempt to add the reservation to the queue
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
         if (reservationManager.addReservation(reservation, filePath)) {
             // Redirect to customer dashboard to refresh with queue data
             response.sendRedirect("customerDashboard");
