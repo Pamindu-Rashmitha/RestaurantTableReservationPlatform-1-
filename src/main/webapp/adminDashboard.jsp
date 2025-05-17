@@ -10,7 +10,6 @@
     return;
   }
   List<Reservation> allReservations = (List<Reservation>) request.getAttribute("allReservations");
-  Reservation[] pendingReservations = (Reservation[]) request.getAttribute("pendingReservations");
   List<User> allUsers = (List<User>) request.getAttribute("allUsers");
   List<User> customers = new ArrayList<>();
   if (allUsers != null) {
@@ -94,42 +93,22 @@
   <div class="card">
     <div class="card-header">Pending Reservations</div>
     <div class="card-body">
-      <% if (pendingReservations != null && pendingReservations.length > 0) { %>
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover">
-          <thead class="thead-dark">
-          <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Guests</th>
-            <th>Status</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% for (Reservation reservation : pendingReservations) { %>
-          <tr>
-            <td><%= reservation.getReservationId() %></td>
-            <td><%= reservation.getUserId() %></td>
-            <td><%= reservation.getDate() %></td>
-            <td><%= reservation.getTime() %></td>
-            <td><%= reservation.getNumberOfGuests() %></td>
-            <td><%= reservation.getStatus() %></td>
-          </tr>
-          <% } %>
-          </tbody>
-        </table>
-      </div>
-      <form action="adminDashboard" method="post">
-        <input type="hidden" name="action" value="processQueue">
-        <button type="submit" class="btn btn-success mt-3">Process Next Reservation</button>
-      </form>
+      <% Reservation[] pendingReservations = (Reservation[]) request.getAttribute("pendingReservations");
+        if (pendingReservations != null && pendingReservations.length > 0) { %>
+      <table class="table">
+        <tr><th>ID</th><th>User</th><th>Date</th><th>Time</th><th>Guests</th></tr>
+        <% for (Reservation res : pendingReservations) { %>
+        <tr>
+          <td><%= res.getReservationId() %></td>
+          <td><%= res.getUserId() %></td>
+          <td><%= res.getDate() %></td>
+          <td><%= res.getTime() %></td>
+          <td><%= res.getNumberOfGuests() %></td>
+        </tr>
+        <% } %>
+      </table>
       <% } else { %>
       <p>No pending reservations.</p>
-      <% } %>
-      <% if (request.getAttribute("message") != null) { %>
-      <p class="mt-3"><%= request.getAttribute("message") %></p>
       <% } %>
     </div>
   </div>

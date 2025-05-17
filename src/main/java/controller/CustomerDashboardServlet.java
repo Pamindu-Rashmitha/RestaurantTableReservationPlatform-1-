@@ -32,7 +32,7 @@ public class CustomerDashboardServlet extends HttpServlet {
             return;
         }
 
-        String filePath = getServletContext().getRealPath("/WEB-INF/reservations.txt");
+        String filePath = getServletContext().getRealPath("/data/reservations.txt");
 
         // Get confirmed reservations from the file
         List<Reservation> confirmedReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
