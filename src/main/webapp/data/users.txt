@@ -1,4 +1,3 @@
-Nadee,Nadee@1123,customer,Nadeeka,nadee123@gmail.com
 Pamindu,Pam@1234,admin,pamindu,pamidurashmitha@gmail.com
 Hasiya,Hasi@123,customer,Hasindu,hasi@gmail.com
 Chathu,Chathu@123,customer,Camellia,chathu123@gmail.com
