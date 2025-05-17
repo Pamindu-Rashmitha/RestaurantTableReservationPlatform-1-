@@ -1,18 +1,18 @@
 package util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import model.Reservation;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ReservationManager {
+    private ReservationQueue reservationQueue;
+    private String filePath;
 
     public ReservationManager() {
-
+        this.reservationQueue = new ReservationQueue();
+        this.filePath = "WEB-INF/reservations.txt";
     }
 
     public List<Reservation> getAllReservations(String filePath) {
@@ -30,8 +30,70 @@ public class ReservationManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return mergeSortReservations(reservations);
+    }
 
-        return this.mergeSortReservations(reservations);
+    public boolean addReservation(Reservation reservation, String filePath) {
+        List<Reservation> reservations = this.getAllReservations(filePath);
+
+        for(Reservation r : reservations) {
+            if (r.getReservationId().equals(reservation.getReservationId())) {
+                return false;
+            }
+        }
+
+        reservation.setStatus("Pending");
+        reservationQueue.enqueue(reservation); // Add to queue instead of directly to file
+        return true;
+    }
+
+    public void saveReservations(List<Reservation> reservations, String filePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for(Reservation reservation : reservations) {
+                String var10001 = reservation.getReservationId();
+                writer.write(var10001 + "," + reservation.getUserId() + "," + reservation.getDate() + "," + reservation.getTime() + "," + reservation.getNumberOfGuests() + "," + reservation.getStatus());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean processNextReservation() {
+        Reservation reservation = reservationQueue.dequeue();
+        if (reservation != null) {
+            reservation.setStatus("Confirmed");
+            List<Reservation> reservations = getAllReservations(filePath);
+            reservations.add(reservation);
+            saveReservations(reservations, filePath);
+            return true;
+        }
+        return false;
+    }
+
+    public ReservationQueue getReservationQueue() {
+        return reservationQueue;
+    }
+
+    public List<Reservation> getReservationsByUser(String userId, String filePath) {
+        List<Reservation> userReservations = new ArrayList();
+
+        for(Reservation reservation : this.getAllReservations(filePath)) {
+            if (reservation.getUserId().equals(userId)) {
+                userReservations.add(reservation);
+            }
+        }
+
+        return userReservations;
+    }
+
+    public Reservation getReservationById(String reservationId, String filePath) {
+        for(Reservation r : this.getAllReservations(filePath)) {
+            if (r.getReservationId().equals(reservationId)) {
+                return r;
+            }
+        }
+        return null;
     }
 
     public List<Reservation> mergeSortReservations(List<Reservation> reservations) {
@@ -50,12 +112,12 @@ public class ReservationManager {
         int i = 0;
         int j = 0;
 
-        while(i < left.size() && j < right.size()) {
-            if ((new ReservationTimeComparator()).compare((Reservation)left.get(i), (Reservation)right.get(j)) <= 0) {
-                merged.add((Reservation)left.get(i));
+        while (i < left.size() && j < right.size()) {
+            if ((new ReservationTimeComparator()).compare((Reservation) left.get(i), (Reservation) right.get(j)) <= 0) {
+                merged.add((Reservation) left.get(i));
                 ++i;
             } else {
-                merged.add((Reservation)right.get(j));
+                merged.add((Reservation) right.get(j));
                 ++j;
             }
         }
@@ -63,55 +125,6 @@ public class ReservationManager {
         merged.addAll(left.subList(i, left.size()));
         merged.addAll(right.subList(j, right.size()));
         return merged;
-    }
-
-    public boolean addReservation(Reservation reservation, String filePath) {
-        List<Reservation> reservations = this.getAllReservations(filePath);
-
-        for(Reservation r : reservations) {
-            if (r.getReservationId().equals(reservation.getReservationId())) {
-                return false;
-            }
-        }
-
-        reservations.add(reservation);
-        this.saveReservations(reservations, filePath);
-        return true;
-    }
-
-    public  List<Reservation> getReservationsByUser(String userId, String filePath) {
-        List<Reservation> userReservations = new ArrayList();
-
-        for(Reservation reservation : this.getAllReservations(filePath)) {
-            if (reservation.getUserId().equals(userId)) {
-                userReservations.add(reservation);
-            }
-        }
-
-        return userReservations;
-    }
-
-    public void saveReservations(List<Reservation> reservations, String filePath) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            for(Reservation reservation : reservations) {
-                String var10001 = reservation.getReservationId();
-                writer.write(var10001 + "," + reservation.getUserId() + "," + reservation.getDate() + "," + reservation.getTime() + "," + reservation.getNumberOfGuests() + "," + reservation.getStatus());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public Reservation getReservationById(String reservationId, String filePath) {
-        for(Reservation r : this.getAllReservations(filePath)) {
-            if (r.getReservationId().equals(reservationId)) {
-                return r;
-            }
-        }
-
-        return null;
     }
 
     public boolean updateReservation(Reservation updatedRes, String filePath) {
@@ -124,7 +137,6 @@ public class ReservationManager {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -134,9 +146,6 @@ public class ReservationManager {
         if (removed) {
             this.saveReservations(reservations, filePath);
         }
-
         return removed;
     }
-
-
 }
