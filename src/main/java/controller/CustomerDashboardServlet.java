@@ -1,12 +1,12 @@
 package controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import model.Reservation;
 import model.User;
 import util.ReservationManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
@@ -15,13 +15,6 @@ import java.util.List;
 
 @WebServlet("/customerDashboard")
 public class CustomerDashboardServlet extends HttpServlet {
-    private ReservationManager reservationManager;
-
-    @Override
-    public void init() throws ServletException {
-        reservationManager = new ReservationManager();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -32,12 +25,15 @@ public class CustomerDashboardServlet extends HttpServlet {
             return;
         }
 
+        ReservationManager reservationManager = (ReservationManager) session.getAttribute("reservationManager");
+        if (reservationManager == null) {
+            reservationManager = new ReservationManager();
+            session.setAttribute("reservationManager", reservationManager);
+        }
+
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
 
-        // Get confirmed reservations from the file
         List<Reservation> confirmedReservations = reservationManager.getReservationsByUser(user.getUsername(), filePath);
-
-        // Get all pending reservations from the queue and filter by current user
         Reservation[] allPending = reservationManager.getReservationQueue().toArray();
         List<Reservation> userPending = new ArrayList<>();
         for (Reservation res : allPending) {
@@ -46,12 +42,10 @@ public class CustomerDashboardServlet extends HttpServlet {
             }
         }
 
-        // Combine confirmed and pending reservations
         List<Reservation> allUserReservations = new ArrayList<>();
         allUserReservations.addAll(confirmedReservations);
         allUserReservations.addAll(userPending);
 
-        // Set the combined list in the request
         request.setAttribute("reservations", allUserReservations);
         request.getRequestDispatcher("customerDashboard.jsp").forward(request, response);
     }
