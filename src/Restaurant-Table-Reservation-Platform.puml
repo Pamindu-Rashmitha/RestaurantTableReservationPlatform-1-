@@ -89,11 +89,11 @@
   }
 
   ' Associations
-Reservation "0..*" -- "1" User : userId
+Reservation "0..*" -- "1" User : creates
 Payment "0..*" -- "1" Reservation : reservationId
-Payment "0..*" -- "1" User : userId
+Payment "0..*" -- "1" User : pays
 Review "0..*" -- "1" Reservation : reservationId
-Review "0..*" -- "1" User : userName
+Review "0..*" -- "1" User : writes
 ReservationRequest .> Reservation : creates
 
 
