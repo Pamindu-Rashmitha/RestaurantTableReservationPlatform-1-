@@ -9,6 +9,7 @@ import util.ReservationManager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Arrays;
 
 @WebServlet("/cancelReservation")
 public class CancelReservationServlet extends HttpServlet {
@@ -43,7 +44,7 @@ public class CancelReservationServlet extends HttpServlet {
 
         // Save the updated reservations back to the file if found
         if (found) {
-            reservationManager.saveReservations(reservations, filePath);
+            reservationManager.saveReservations(Arrays.asList(reservations), filePath); // ✅ Converted to Collection
         }
 
         // Redirect back to the customer dashboard servlet

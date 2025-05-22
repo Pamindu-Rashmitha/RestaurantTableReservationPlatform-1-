@@ -8,6 +8,8 @@ public class Reservation {
     private String time;
     private int numberOfGuests;
     private String status;
+    private int queuePosition;
+    private int tableNumber;
 
 
     public Reservation(String reservationId, String userId, String date, String time, int numberOfGuests, String status) {
@@ -39,6 +41,11 @@ public class Reservation {
         return status;
     }
 
+    public int getQueuePosition() { return queuePosition; }
+    public void setQueuePosition(int queuePosition) { this.queuePosition = queuePosition; }
+
+    public int getTableNumber() { return tableNumber; }
+    public void setTableNumber(int tableNumber) { this.tableNumber = tableNumber; }
 
     public void setReservationId(String reservationId) {
         this.reservationId = reservationId;

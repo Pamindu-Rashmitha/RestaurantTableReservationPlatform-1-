@@ -1,7 +1,7 @@
 package model;
 
 public class ReservationQueue {
-    private static final int MAX_TABLES = 10;
+    private static final int MAX_TABLES = 2;
     private final Reservation[] queue;
     private int front;
     private int rear;
@@ -20,18 +20,16 @@ public class ReservationQueue {
             System.out.println("All tables occupied! Reservation added to waiting list");
             return;
         }
-
         rear = (rear + 1) % MAX_TABLES;
         queue[rear] = reservation;
         size++;
     }
 
-    // Remove reservation from queue
+    // Remove and return the front reservation
     public Reservation dequeue() {
         if (isEmpty()) {
             throw new IllegalStateException("No reservations in queue");
         }
-
         Reservation temp = queue[front];
         queue[front] = null;
         front = (front + 1) % MAX_TABLES;
@@ -39,43 +37,33 @@ public class ReservationQueue {
         return temp;
     }
 
-    // Check available tables
-    public int availableTables() {
-        return MAX_TABLES - size;
-    }
-
-    // Queue status checks
-    public boolean isFull() {
-        return size == MAX_TABLES;
-    }
-
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-
+    // Remove a reservation by ID
     public Reservation remove(String reservationId) {
         int count = 0;
         int index = front;
+
         while (count < size) {
             if (queue[index].getReservationId().equals(reservationId)) {
                 Reservation removed = queue[index];
-                // Shift remaining elements
-                for (int i = index; i != rear; i = (i+1)%MAX_TABLES) {
-                    queue[i] = queue[(i+1)%MAX_TABLES];
+
+                // Shift elements to fill the gap
+                for (int i = index; i != rear; i = (i + 1) % MAX_TABLES) {
+                    queue[i] = queue[(i + 1) % MAX_TABLES];
                 }
-                if (rear == front) rear = -1;
-                else rear = (rear-1+MAX_TABLES)%MAX_TABLES;
+
+                queue[rear] = null;
+                rear = (rear - 1 + MAX_TABLES) % MAX_TABLES;
                 size--;
                 return removed;
             }
             index = (index + 1) % MAX_TABLES;
             count++;
         }
+
         return null;
     }
 
-    // Get current reservations
+    // Display reservations in queue
     public void displayReservations() {
         System.out.println("\nCurrent Reservations:");
         int count = 0;
@@ -86,5 +74,31 @@ public class ReservationQueue {
             index = (index + 1) % MAX_TABLES;
             count++;
         }
+    }
+
+    // Clear all reservations
+    public void clear() {
+        front = 0;
+        rear = -1;
+        size = 0;
+        for (int i = 0; i < MAX_TABLES; i++) {
+            queue[i] = null;
+        }
+    }
+
+    public boolean isFull() {
+        return size == MAX_TABLES;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public int availableTables() {
+        return MAX_TABLES - size;
+    }
+
+    public int getSize() {
+        return size;
     }
 }

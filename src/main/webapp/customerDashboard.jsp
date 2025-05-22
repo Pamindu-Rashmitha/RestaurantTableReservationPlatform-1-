@@ -13,12 +13,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <!-- Responsive Meta Tag -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Customer Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
-    /* Full background image */
     body {
       background: url('assets/res.jpeg') no-repeat center center fixed;
       background-size: cover;
@@ -27,7 +25,6 @@
       margin: 0;
       padding: 0;
     }
-    /* Overlay for content readability */
     .overlay {
       background: rgba(255, 255, 255, 0.95);
       padding: 30px;
@@ -67,7 +64,6 @@
     .table th:first-child, .table td:first-child {
       width: 10%;
     }
-    /* Responsive adjustments */
     @media (max-width: 768px) {
       .dashboard-header {
         font-size: 2rem;
@@ -114,9 +110,9 @@
   </div>
 </nav>
 <div class="container overlay">
-<div class="text-center">
-  <h1>Hi, <%= user.getName() %>!!</h1>
-</div>
+  <div class="text-center">
+    <h1>Hi, <%= user.getName() %>!!</h1>
+  </div>
 
   <br>
   <p class="text-center">
@@ -130,6 +126,7 @@
     <a href="makeReservation.jsp" class="btn btn-primary btn-custom">Make a Reservation</a>
   </div>
   <br>
+
   <!-- Reservations Section -->
   <div class="card">
     <div class="card-header">Your Reservations</div>
@@ -144,7 +141,7 @@
             <th scope="col">Date</th>
             <th scope="col">Time</th>
             <th scope="col">Guests</th>
-            <th scope="col">Status</th>
+            <th scope="col">Status / Info</th>
             <th scope="col">Action</th>
           </tr>
           </thead>
@@ -155,9 +152,14 @@
             <td><%= reservation.getDate() %></td>
             <td><%= reservation.getTime() %></td>
             <td><%= reservation.getNumberOfGuests() %></td>
-            <td><%= reservation.getStatus() %></td>
             <td>
-              <% if ("Pending".equals(reservation.getStatus())) { %>
+              <%= reservation.getStatus() %><br>
+              <% if ("WAITING".equals(reservation.getStatus())) { %>
+              <% } else if ("CONFIRMED".equals(reservation.getStatus())) { %>
+              <% } %>
+            </td>
+            <td>
+              <% if ("Pending".equals(reservation.getStatus()) || "WAITING".equals(reservation.getStatus())) { %>
               <a href="payment.jsp?reservationId=<%= reservation.getReservationId() %>" class="btn btn-primary btn-sm">Pay Now</a>
               <a href="editReservation?reservationId=<%= reservation.getReservationId() %>" class="btn btn-primary btn-sm btn-custom">Edit</a>
               <form action="cancelReservation" method="post" style="display:inline;">
