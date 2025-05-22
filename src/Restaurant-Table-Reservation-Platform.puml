@@ -42,14 +42,6 @@
     +getType(): String
   }
 
-  class ReservationRequest {
-    +customerName: String
-    +partySize: int
-    +time: String
-    +ReservationRequest(customerName: String, partySize: int, time: String)
-    +toString(): String
-  }
-
   class Review {
     -reviewId: String
     -userName: String
@@ -94,7 +86,7 @@ Payment "0..*" -- "1" Reservation : reservationId
 Payment "0..*" -- "1" User : pays
 Review "0..*" -- "1" Reservation : reservationId
 Review "0..*" -- "1" User : writes
-ReservationRequest .> Reservation : creates
+
 
 
 @enduml
