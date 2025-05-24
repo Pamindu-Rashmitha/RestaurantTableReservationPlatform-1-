@@ -27,10 +27,10 @@ public class CancelReservationServlet extends HttpServlet {
         String reservationId = request.getParameter("reservationId");
         String filePath      = getServletContext().getRealPath("/data/reservations.txt");
 
-        /* ---------- 1. Attempt cancellation ---------- */
+
         boolean success = reservationManager.cancelReservationAndPromote(reservationId, filePath);
 
-        /* ---------- 2. Feedback message ---------- */
+
         HttpSession session = request.getSession();
         if (success) {
             session.setAttribute("statusMessage", "Reservation cancelled successfully.");
@@ -38,7 +38,7 @@ public class CancelReservationServlet extends HttpServlet {
             session.setAttribute("statusMessage", "Cancellation failed: reservation not found or already cancelled.");
         }
 
-        /* ---------- 3. Redirect to dashboard servlet ---------- */
+
         response.sendRedirect("customerDashboard");
     }
 }

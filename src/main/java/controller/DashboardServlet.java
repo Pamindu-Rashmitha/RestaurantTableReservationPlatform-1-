@@ -27,7 +27,7 @@ public class DashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
 
-        /* ---------- 1. Auth check ---------- */
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -35,25 +35,25 @@ public class DashboardServlet extends HttpServlet {
             return;
         }
 
-        /* ---------- 2. Load reservations ---------- */
+        //load reservations
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
         List<Reservation> userReservations =
                 reservationManager.getReservationsByUser(user.getUsername(), filePath);
 
         request.setAttribute("reservations", userReservations);
 
-        /* ---------- 3. Flash status or success messages ---------- */
+
         String statusMsg = (String) session.getAttribute("statusMessage");
         if (statusMsg != null) {
             request.setAttribute("statusMessage", statusMsg);
             session.removeAttribute("statusMessage");
         }
-        // legacy “success” param still supported
+
         if ("true".equals(request.getParameter("success"))) {
             request.setAttribute("successMessage", "Reservation made successfully!");
         }
 
-        /* ---------- 4. Queue position if waiting ---------- */
+
         userReservations.stream()
                 .filter(r -> "WAITING".equalsIgnoreCase(r.getStatus()))
                 .findFirst()
@@ -62,7 +62,7 @@ public class DashboardServlet extends HttpServlet {
                     request.setAttribute("queuePosition", pos);
                 });
 
-        /* ---------- 5. Forward to same JSP as CustomerDashboardServlet ---------- */
+
         request.getRequestDispatcher("customerDashboard.jsp").forward(request, response);
     }
 }

@@ -2,7 +2,7 @@
 <%@ page import="java.util.*,model.User,model.Reservation" %>
 
 <%
-  /* ---------- Security check ---------- */
+
   User user = (User) session.getAttribute("user");
   if (user == null || !"admin".equalsIgnoreCase(user.getRole())) {
     response.sendRedirect("login.jsp");

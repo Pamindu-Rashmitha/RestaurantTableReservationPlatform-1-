@@ -31,7 +31,7 @@ public class AdminDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        /* ---------- 1. Auth check ---------- */
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null || !"admin".equalsIgnoreCase(user.getRole())) {
@@ -39,7 +39,7 @@ public class AdminDashboardServlet extends HttpServlet {
             return;
         }
 
-        /* ---------- 2. Load reservation data ---------- */
+        //load reservation data
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
 
         List<Reservation> confirmed =
@@ -47,7 +47,7 @@ public class AdminDashboardServlet extends HttpServlet {
         List<Reservation> waiting =
                 reservationManager.getWaitingReservations(filePath);
 
-        /* ---------- 3. Optional search filter ---------- */
+
         String term = request.getParameter("searchTerm");
         if (term != null && !term.trim().isEmpty()) {
             String q = term.toLowerCase();
@@ -55,26 +55,26 @@ public class AdminDashboardServlet extends HttpServlet {
             waiting   = filter(waiting,   q);
         }
 
-        /* ---------- 4. Push attributes for new JSP version ---------- */
+
         request.setAttribute("confirmedReservations", confirmed);
         request.setAttribute("waitingReservations",   waiting);
 
-        /* ---------- 4-bis. Legacy combined list for old JSP ---------- */
+
         List<Reservation> all = new ArrayList<>(confirmed);
         all.addAll(waiting);
         request.setAttribute("allReservations", all);   // ← added line
 
-        /* ---------- 5. Users list ---------- */
+        //userlist
         String userFile = getServletContext().getRealPath("/data/users.txt");
         request.setAttribute("allUsers",
                 userManager.getAllUsers(userFile));
 
-        /* ---------- 6. Forward to JSP ---------- */
+
         request.getRequestDispatcher("adminDashboard.jsp")
                 .forward(request, response);
     }
 
-    /** Simple substring search across key fields */
+
     private List<Reservation> filter(List<Reservation> src, String q) {
         List<Reservation> out = new ArrayList<>();
         for (Reservation r : src) {

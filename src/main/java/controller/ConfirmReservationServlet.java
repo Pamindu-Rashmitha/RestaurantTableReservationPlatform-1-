@@ -26,7 +26,7 @@ public class ConfirmReservationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        /* ---------- 1. Admin auth check ---------- */
+
         HttpSession session = request.getSession();
         User admin = (User) session.getAttribute("user");
         if (admin == null || !"admin".equalsIgnoreCase(admin.getRole())) {
@@ -34,7 +34,7 @@ public class ConfirmReservationServlet extends HttpServlet {
             return;
         }
 
-        /* ---------- 2. Locate reservation ---------- */
+
         String reservationId = request.getParameter("reservationId");
         String filePath      = getServletContext().getRealPath("/data/reservations.txt");
 
@@ -45,10 +45,10 @@ public class ConfirmReservationServlet extends HttpServlet {
             return;
         }
 
-        /* ---------- 3. Remove old instance ---------- */
+
         reservationManager.cancelReservationAndPromote(reservationId, filePath);
 
-        /* ---------- 4. Re-add as a fresh request (manager will assign status) ---------- */
+
         Reservation newCopy = new Reservation(
                 res.getReservationId(),
                 res.getUserId(),
@@ -59,7 +59,7 @@ public class ConfirmReservationServlet extends HttpServlet {
         );
         reservationManager.addReservation(newCopy, filePath);
 
-        /* ---------- 5. Build admin feedback ---------- */
+
         String msg = "Reservation " + reservationId + " ";
         if ("CONFIRMED".equalsIgnoreCase(newCopy.getStatus())) {
             msg += "is now CONFIRMED.";
@@ -69,7 +69,7 @@ public class ConfirmReservationServlet extends HttpServlet {
         }
         session.setAttribute("statusMessage", msg);
 
-        /* ---------- 6. Redirect to admin dashboard servlet ---------- */
+
         response.sendRedirect("adminDashboard");
     }
 }

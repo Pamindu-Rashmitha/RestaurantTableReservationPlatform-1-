@@ -6,20 +6,15 @@ import model.ReservationQueue;
 import java.io.*;
 import java.util.*;
 
-/**
- * Central business-logic layer for the restaurant platform.
- *  – Flat-file persistence (reservations.txt)
- *  – Confirmed-queue + waiting-list logic
- *  – Atomic add / cancel / update operations
- */
+
 public class ReservationManager {
 
     /** runtime queue (confirmed) + waiting list */
     private final ReservationQueue activeReservations = new ReservationQueue();
 
-    /* ---------- Low-level helpers ---------------------------------------------------- */
 
-    /** Load file → rebuild queue + waiting list */
+
+    // Load file abd rebuild queue + waiting list
     private void loadCurrentState(String filePath) {
         activeReservations.clear();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -39,7 +34,7 @@ public class ReservationManager {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    /** Persist queue + waiting list (skip CANCELLED) */
+    //save reservations
     public void saveReservations(String filePath) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             // queue first
@@ -58,9 +53,9 @@ public class ReservationManager {
                 r.getTime(), String.valueOf(r.getNumberOfGuests()), r.getStatus());
     }
 
-    /* ---------- CRUD API ------------------------------------------------------------- */
 
-    /** Add → returns false if duplicate id */
+
+    //Add reservation
     public boolean addReservation(Reservation r, String path) {
         loadCurrentState(path);
         if (getReservationById(r.getReservationId(), path) != null) return false;
@@ -70,7 +65,7 @@ public class ReservationManager {
         return true;
     }
 
-    /** Cancel → auto-promote; returns false if id not found */
+    //cancel reservation
     public boolean cancelReservationAndPromote(String id, String path) {
         loadCurrentState(path);
         Reservation removed = activeReservations.remove(id);
@@ -87,13 +82,13 @@ public class ReservationManager {
         return true;
     }
 
-    /** Update: remove-then-add to re-evaluate queue status */
+    //update reservation
     public boolean updateReservation(Reservation upd, String path) {
         if (!cancelReservationAndPromote(upd.getReservationId(), path)) return false;
         return addReservation(upd, path);
     }
 
-    /** Remove *all* reservations for a user (admin purge) */
+    //remove a reservation
     public boolean removeReservationsByUser(String userId, String path) {
         loadCurrentState(path);
         boolean removed = false;
@@ -121,7 +116,7 @@ public class ReservationManager {
         return removed;
     }
 
-    /* ---------- Queries -------------------------------------------------------------- */
+
 
     public Reservation getReservationById(String id, String path) {
         loadCurrentState(path);
@@ -167,7 +162,7 @@ public class ReservationManager {
         return all;
     }
 
-    /** 1-based waiting-list position; −1 if not in waiting list */
+    //get the position in waiting list
     public int getWaitingListPosition(Reservation res) {
         int pos = 1;
         for (Reservation r : activeReservations.getWaitingList()) {
@@ -177,7 +172,7 @@ public class ReservationManager {
         return -1;
     }
 
-    /* ---------- Internal ------------------------------------------------------------- */
+
 
     private Reservation removeFromWaitingList(String id) {
         Iterator<Reservation> it = activeReservations.getWaitingList().iterator();

@@ -26,7 +26,7 @@ public class UpdateReservationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        /* ---------- 1. Auth check ---------- */
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -34,7 +34,7 @@ public class UpdateReservationServlet extends HttpServlet {
             return;
         }
 
-        /* ---------- 2. Read form data ---------- */
+
         String reservationId = request.getParameter("reservationId");
         String date          = request.getParameter("date");
         String time          = request.getParameter("time");
@@ -43,13 +43,13 @@ public class UpdateReservationServlet extends HttpServlet {
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
         Reservation oldRes = reservationManager.getReservationById(reservationId, filePath);
 
-        /* ---------- 3. Ownership check ---------- */
+
         if (oldRes == null || !oldRes.getUserId().equals(user.getUsername())) {
             response.sendRedirect("customerDashboard");
             return;
         }
 
-        /* ---------- 4. Create updated copy ---------- */
+
         Reservation updated = new Reservation(
                 oldRes.getReservationId(),
                 oldRes.getUserId(),
@@ -62,7 +62,7 @@ public class UpdateReservationServlet extends HttpServlet {
         /* ---------- 5. Replace via manager ---------- */
         reservationManager.updateReservation(updated, filePath);
 
-        /* ---------- 6. Build feedback ---------- */
+
         String msg;
         if ("CONFIRMED".equalsIgnoreCase(updated.getStatus())) {
             msg = "Reservation updated and confirmed!";
@@ -73,7 +73,7 @@ public class UpdateReservationServlet extends HttpServlet {
         }
         session.setAttribute("statusMessage", msg);
 
-        /* ---------- 7. Redirect to dashboard ---------- */
+
         response.sendRedirect("customerDashboard");
     }
 }

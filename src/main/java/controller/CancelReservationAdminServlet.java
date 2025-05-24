@@ -25,7 +25,7 @@ public class CancelReservationAdminServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        /* ---------- 1. Admin auth check ---------- */
+
         HttpSession session = request.getSession();
         User admin = (User) session.getAttribute("user");
         if (admin == null || !"admin".equalsIgnoreCase(admin.getRole())) {
@@ -33,20 +33,20 @@ public class CancelReservationAdminServlet extends HttpServlet {
             return;
         }
 
-        /* ---------- 2. Attempt cancellation ---------- */
+
         String reservationId = request.getParameter("reservationId");
         String filePath      = getServletContext().getRealPath("/data/reservations.txt");
 
         boolean success = reservationManager.cancelReservationAndPromote(reservationId, filePath);
 
-        /* ---------- 3. Admin-facing feedback ---------- */
+
         if (success) {
             session.setAttribute("statusMessage", "Reservation " + reservationId + " cancelled; waiting list promoted if applicable.");
         } else {
             session.setAttribute("statusMessage", "Cancellation failed: reservation not found or already cancelled.");
         }
 
-        /* ---------- 4. Redirect to admin dashboard servlet ---------- */
+
         response.sendRedirect("adminDashboard");
     }
 }

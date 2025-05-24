@@ -27,7 +27,7 @@ public class ReservationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        /* ---------- 1. Authentication check ---------- */
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -35,7 +35,7 @@ public class ReservationServlet extends HttpServlet {
             return;
         }
 
-        /* ---------- 2. Build Reservation object ---------- */
+
         String reservationId = "RES" + System.currentTimeMillis();          // unique ID
         String date  = request.getParameter("date");
         String time  = request.getParameter("time");
@@ -52,10 +52,10 @@ public class ReservationServlet extends HttpServlet {
 
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
 
-        /* ---------- 3. Add via ReservationManager ---------- */
+
         reservationManager.addReservation(newRes, filePath);
 
-        /* ---------- 4. Build feedback message ---------- */
+
         String statusMessage;
         if ("CONFIRMED".equalsIgnoreCase(newRes.getStatus())) {
             statusMessage = "Table reserved successfully!";
@@ -66,10 +66,10 @@ public class ReservationServlet extends HttpServlet {
             statusMessage = "Reservation saved. Current status: " + newRes.getStatus();
         }
 
-        /* ---------- 5. Flash message → session ---------- */
+
         session.setAttribute("statusMessage", statusMessage);
 
-        /* ---------- 6. Redirect to dashboard servlet (not JSP) ---------- */
+
         response.sendRedirect("customerDashboard");   // triggers CustomerDashboardServlet
     }
 }
