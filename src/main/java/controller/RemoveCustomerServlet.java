@@ -51,7 +51,7 @@ public class RemoveCustomerServlet extends HttpServlet {
                 : "Failed to remove customer '" + username + "'.";
         session.setAttribute("statusMessage", msg);
 
-        
+
         response.sendRedirect("adminDashboard");
     }
 }
