@@ -9,11 +9,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet("/updateReservation")
 public class UpdateReservationServlet extends HttpServlet {
+
     private ReservationManager reservationManager;
 
     @Override
@@ -24,6 +25,8 @@ public class UpdateReservationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        /* ---------- 1. Auth check ---------- */
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -31,34 +34,47 @@ public class UpdateReservationServlet extends HttpServlet {
             return;
         }
 
+        /* ---------- 2. Read form data ---------- */
         String reservationId = request.getParameter("reservationId");
-        String date = request.getParameter("date");
-        String time = request.getParameter("time");
-        int numberOfGuests = Integer.parseInt(request.getParameter("numberOfGuests"));
+        String date          = request.getParameter("date");
+        String time          = request.getParameter("time");
+        int guests           = Integer.parseInt(request.getParameter("numberOfGuests"));
 
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
-        Reservation reservation = reservationManager.getReservationById(reservationId, filePath);
-        if (reservation == null || !reservation.getUserId().equals(user.getUsername())) {
-            response.sendRedirect("customerDashboard.jsp");
+        Reservation oldRes = reservationManager.getReservationById(reservationId, filePath);
+
+        /* ---------- 3. Ownership check ---------- */
+        if (oldRes == null || !oldRes.getUserId().equals(user.getUsername())) {
+            response.sendRedirect("customerDashboard");
             return;
         }
 
-        // Update reservation details
-        reservation.setDate(date);
-        reservation.setTime(time);
-        reservation.setNumberOfGuests(numberOfGuests);
+        /* ---------- 4. Create updated copy ---------- */
+        Reservation updated = new Reservation(
+                oldRes.getReservationId(),
+                oldRes.getUserId(),
+                date,
+                time,
+                guests,
+                "PENDING"    // will be reassigned by manager
+        );
 
-        // Save the updated reservation
-        if (reservationManager.updateReservation(reservation, filePath)) {
-            // Fetch updated reservations for the user
-            List<Reservation> userReservations =
-                    reservationManager.getReservationsByUser(user.getUsername(), filePath);
-            request.setAttribute("reservations", userReservations);
-            request.getRequestDispatcher("customerDashboard.jsp").forward(request, response);
-        } else {
-            request.setAttribute("error", "Failed to update reservation");
-            request.setAttribute("reservation", reservation);
-            request.getRequestDispatcher("editReservation.jsp").forward(request, response);
+        /* ---------- 5. Replace via manager ---------- */
+        reservationManager.updateReservation(updated, filePath);
+
+        /* ---------- 6. Build feedback ---------- */
+        String msg;
+        if ("CONFIRMED".equalsIgnoreCase(updated.getStatus())) {
+            msg = "Reservation updated and confirmed!";
+        } else { // WAITING
+            int pos = reservationManager.getWaitingListPosition(updated);
+            msg = "Reservation updated, but all tables are booked. You are now #"
+                    + pos + " in the waiting list.";
         }
+        session.setAttribute("statusMessage", msg);
+
+        /* ---------- 7. Redirect to dashboard ---------- */
+        response.sendRedirect("customerDashboard");
     }
 }
+

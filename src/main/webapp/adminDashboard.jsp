@@ -1,291 +1,328 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="model.User" %>
-<%@ page import="model.Reservation" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.*,model.User,model.Reservation" %>
+
 <%
+  /* ---------- Security check ---------- */
   User user = (User) session.getAttribute("user");
-  if (user == null || !"admin".equals(user.getRole())) {
+  if (user == null || !"admin".equalsIgnoreCase(user.getRole())) {
     response.sendRedirect("login.jsp");
     return;
   }
-  List<Reservation> allReservations = (List<Reservation>) request.getAttribute("allReservations");
+
+  /* ---------- Data from servlet ---------- */
+  @SuppressWarnings("unchecked")
+  List<Reservation> confirmedReservations =
+          (List<Reservation>) request.getAttribute("confirmedReservations");
+
+  @SuppressWarnings("unchecked")
+  List<Reservation> waitingReservations =
+          (List<Reservation>) request.getAttribute("waitingReservations");
+
+  @SuppressWarnings("unchecked")
   List<User> allUsers = (List<User>) request.getAttribute("allUsers");
+
   List<User> customers = new ArrayList<>();
   if (allUsers != null) {
-    for (User u : allUsers) {
-      if ("customer".equals(u.getRole())) {
-        customers.add(u);
-      }
-    }
+    for (User u : allUsers) if ("customer".equals(u.getRole())) customers.add(u);
   }
+
+  /* ---------- Flash message ---------- */
+  String flash = (String) session.getAttribute("statusMessage");
+  if (flash != null) session.removeAttribute("statusMessage");
 %>
+
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
+    /* General styles */
     body {
-      background: url('assets/res.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      color: #212529;
+      font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+      background: url('assets/res.jpeg') no-repeat center/cover fixed;
+      color: #2d3436;
       margin: 0;
-      padding: 0;
     }
+
+    /* Navbar styling */
+    .navbar {
+      background-color: #1a202c;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .navbar-text a {
+      color: #ffffff !important;
+      transition: color 0.3s;
+    }
+    .navbar-text a:hover {
+      color: #cbd5e0 !important;
+    }
+
+    /* Container overlay */
     .overlay {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-      margin-top: 30px;
-      margin-bottom: 30px;
+      background: rgba(255, 255, 255, 0.97);
+      padding: 2.5rem;
+      margin: 2rem auto;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      max-width: 1200px;
     }
-    .dashboard-header {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 2.5rem;
-      color: #343a40;
-      font-weight: bold;
+
+    /* Headings */
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d3436;
+      margin-bottom: 1.5rem;
     }
-    .card {
-      border: none;
-      margin-bottom: 30px;
+    h4 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #4a5568;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
     }
-    .card-header {
-      background: linear-gradient(135deg, #6c63ff, #4834d4);
-      color: #fff;
+
+    /* Buttons */
+    .btn {
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
       font-weight: 500;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-    }
-    .btn-custom {
       transition: all 0.3s ease;
     }
-    .btn-custom:hover, .btn-custom:focus {
+    .btn-primary {
+      background-color: #2b6cb0;
+      border-color: #2b6cb0;
+    }
+    .btn-primary:hover {
+      background-color: #2c5282;
+      border-color: #2c5282;
       transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .btn-danger {
+      background-color: #c53030;
+      border-color: #c53030;
+    }
+    .btn-danger:hover {
+      background-color: #9b2c2c;
+      border-color: #9b2c2c;
+      transform: translateY(-2px);
+    }
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.875rem;
+    }
+    .btn-lg {
+      padding: 0.8rem 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    /* Badges */
+    .badge-success {
+      background-color: #38a169;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+    }
+    .badge-warning {
+      background-color: #dd6b20;
+      color: #fff;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+    }
+
+    /* Tables */
+    .table {
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    .table thead th {
+      background-color: 1a202c;
+      color: #fff;
+      font-weight: 600;
+      padding: 1rem;
+    }
+    .table td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-color: #e2e8f0;
     }
     .table-hover tbody tr:hover {
-      background-color: rgba(241, 241, 241, 0.8);
+      background-color: #f7fafc;
     }
-    .modal-content {
-      border-radius: 10px;
+    .table-responsive {
+      margin-bottom: 1.5rem;
     }
+
+    /* Alerts */
+    .alert-info {
+      background-color: #e6f7fa;
+      border-color: #bee3f8;
+      color: #2b6cb0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Responsive adjustments */
     @media (max-width: 768px) {
-      .dashboard-header {
-        font-size: 2rem;
-      }
       .overlay {
-        padding: 20px;
+        padding: 1.5rem;
+        margin: 1rem;
       }
-      .card-header {
-        font-size: 1.1rem;
+      h2 {
+        font-size: 1.75rem;
+      }
+      h4 {
+        font-size: 1.25rem;
+      }
+      .table th, .table td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
+      .btn-lg {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
       }
     }
+
     @media (max-width: 576px) {
-      .dashboard-header {
-        font-size: 1.8rem;
+      .navbar {
+        padding: 0.75rem 1rem;
       }
-      .overlay {
-        padding: 15px;
+      .btn-sm {
+        display: block;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        text-align: center;
       }
       .table-responsive {
-        font-size: 0.9rem;
+        -webkit-overflow-scrolling: touch;
       }
     }
   </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" >Admin Dashboard</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a href="login.jsp" class="nav-link">Logout</a>
-      </li>
-    </ul>
-  </div>
+<nav class="navbar navbar-dark bg-dark">
+  <a class="navbar-brand"><i class="fas fa-tachometer-alt mr-2"></i>Admin Dashboard</a>
+  <span class="navbar-text ml-auto"><a href="login.jsp"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a></span>
 </nav>
+
 <div class="container overlay">
-  <h1 class="dashboard-header">Welcome, <%= user.getName() %>!</h1>
-  <br>
+  <h2 class="mb-4">Welcome, <%= user.getName() %>!</h2>
 
-  <!-- Registered Customers Section -->
-  <div class="card">
-    <div class="card-header">Registered Customers</div>
-    <div class="card-body">
-      <% if (customers != null && !customers.isEmpty()) { %>
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover">
-          <thead class="thead-dark">
-          <tr>
-            <th>Username</th>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Action</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% for (User customer : customers) { %>
-          <tr>
-            <td><%= customer.getUsername() %></td>
-            <td><%= customer.getName() %></td>
-            <td><%= customer.getRole() %></td>
-            <td>
-              <button type="button" class="btn btn-danger btn-sm btn-custom" data-toggle="modal" data-target="#removeCustomerModal" data-username="<%= customer.getUsername() %>">
-                Remove
-              </button>
-            </td>
-          </tr>
-          <% } %>
-          </tbody>
-        </table>
-      </div>
-      <% } else { %>
-      <p>No registered customers found.</p>
+  <a href="adminDashboard" class="btn btn-lg btn-primary">
+    <i class="fas fa-sync-alt mr-2"></i>
+  </a>
+
+  <% if (flash != null) { %>
+  <div class="alert alert-info"><i class="fas fa-info-circle mr-2"></i><%= flash %></div>
+  <% } %>
+
+  <!-- Registered customers -->
+  <h4><i class="fas fa-users mr-2"></i>Registered Customers</h4>
+  <% if (customers.isEmpty()) { %>
+  <p class="text-muted">No registered customers.</p>
+  <% } else { %>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-dark"><tr><th>Username</th><th>Name</th><th>Role</th><th>Action</th></tr></thead>
+      <tbody>
+      <% for (User c : customers) { %>
+      <tr>
+        <td><%= c.getUsername() %></td>
+        <td><%= c.getName() %></td>
+        <td><%= c.getRole() %></td>
+        <td>
+          <form action="removeCustomer" method="post" class="d-inline">
+            <input type="hidden" name="username" value="<%= c.getUsername() %>">
+            <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt mr-1"></i>Remove</button>
+          </form>
+        </td>
+      </tr>
       <% } %>
-    </div>
+      </tbody>
+    </table>
   </div>
+  <% } %>
 
-  <!-- Reservations Section -->
-  <div class="card">
-    <div class="card-header">All Reservations</div>
-    <div class="card-body">
-
-      <!-- Buttons Row -->
-      <div class="mb-3 d-flex flex-wrap gap-2">
-        <a href="adminDashboard" class="btn btn-info btn-custom mr-2">Refresh Reservations</a>
-
-      </div>
-
-      <% if (allReservations != null && !allReservations.isEmpty()) { %>
-      <form action="adminDashboard" method="get" class="mb-3">
-        <div class="row">
-          <div class="col-md-4">
-            <input type="text" name="searchTerm" class="form-control" placeholder="Search by Reservation ID, User, Date, or Time">
-          </div>
-          <div class="col-md-2">
-            <button type="submit" class="btn btn-primary">Search</button>
-          </div>
-        </div>
-      </form>
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover">
-          <thead class="thead-dark">
-          <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Guests</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% for (Reservation reservation : allReservations) { %>
-          <tr>
-            <td><%= reservation.getReservationId() %></td>
-            <td><%= reservation.getUserId() %></td>
-            <td><%= reservation.getDate() %></td>
-            <td><%= reservation.getTime() %></td>
-            <td><%= reservation.getNumberOfGuests() %></td>
-            <td><%= reservation.getStatus() %></td>
-            <td>
-              <% if ("Paid".equals(reservation.getStatus())) { %>
-              <form action="confirmReservation" method="post" style="display:inline;">
-                <input type="hidden" name="reservationId" value="<%= reservation.getReservationId() %>">
-                <button type="submit" class="btn btn-primary btn-sm btn-custom" title="Confirm this reservation (payment completed)">
-                  Confirm
-                </button>
-              </form>
-              <% } %>
-              <% if (!"Cancelled".equals(reservation.getStatus())) { %>
-              <button type="button" class="btn btn-danger btn-sm btn-custom" data-toggle="modal" data-target="#cancelReservationModal" data-reservationid="<%= reservation.getReservationId() %>">
-                Cancel
-              </button>
-              <% } %>
-            </td>
-          </tr>
-          <% } %>
-          </tbody>
-        </table>
-      </div>
-      <% } else { %>
-      <p>No reservations found.</p>
+  <!-- Confirmed queue -->
+  <h4 class="mt-4"><i class="fas fa-check-circle mr-2"></i>Active Reservations (Confirmed)</h4>
+  <% if (confirmedReservations == null || confirmedReservations.isEmpty()) { %>
+  <p class="text-muted">No confirmed reservations.</p>
+  <% } else { %>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-dark"><tr>
+        <th>ID</th><th>User</th><th>Date</th><th>Time</th><th>Guests</th><th>Status</th><th>Action</th>
+      </tr></thead>
+      <tbody>
+      <% for (Reservation r : confirmedReservations) { %>
+      <tr>
+        <td><%= r.getReservationId() %></td>
+        <td><%= r.getUserId() %></td>
+        <td><%= r.getDate() %></td>
+        <td><%= r.getTime() %></td>
+        <td><%= r.getNumberOfGuests() %></td>
+        <td><span class="badge badge-success"><i class="fas fa-check mr-1"></i>Confirmed</span></td>
+        <td>
+          <form action="cancelReservationAdmin" method="post" class="d-inline">
+            <input type="hidden" name="reservationId" value="<%= r.getReservationId() %>">
+            <button class="btn btn-danger btn-sm"><i class="fas fa-times mr-1"></i>Cancel</button>
+          </form>
+        </td>
+      </tr>
       <% } %>
-    </div>
+      </tbody>
+    </table>
   </div>
+  <% } %>
 
+  <!-- Waiting list -->
+  <h4 class="mt-4"><i class="fas fa-hourglass-half mr-2"></i>Waiting List</h4>
+  <% if (waitingReservations == null || waitingReservations.isEmpty()) { %>
+  <p class="text-muted">No entries in waiting list.</p>
+  <% } else { %>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-dark"><tr>
+        <th>Pos</th><th>ID</th><th>User</th><th>Date</th><th>Time</th><th>Guests</th><th>Status</th><th>Action</th>
+      </tr></thead>
+      <tbody>
+      <% int pos = 1;
+        for (Reservation r : waitingReservations) { %>
+      <tr>
+        <td><%= pos++ %></td>
+        <td><%= r.getReservationId() %></td>
+        <td><%= r.getUserId() %></td>
+        <td><%= r.getDate() %></td>
+        <td><%= r.getTime() %></td>
+        <td><%= r.getNumberOfGuests() %></td>
+        <td><span class="badge badge-warning"><i class="fas fa-hourglass mr-1"></i>Waiting</span></td>
+        <td>
+          <form action="cancelReservationAdmin" method="post" class="d-inline">
+            <input type="hidden" name="reservationId" value="<%= r.getReservationId() %>">
+            <button class="btn btn-danger btn-sm"><i class="fas fa-times mr-1"></i>Cancel</button>
+          </form>
+        </td>
+      </tr>
+      <% } %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
 </div>
 
-<!-- Modals -->
-<div class="modal fade" id="removeCustomerModal" tabindex="-1" role="dialog" aria-labelledby="removeCustomerModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirm Removal</h5>
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to remove this customer? This will also delete all their reservations.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <form action="removeCustomer" method="post">
-          <input type="hidden" name="username" id="removeUsername">
-          <button type="submit" class="btn btn-danger">Remove</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="cancelReservationModal" tabindex="-1" role="dialog" aria-labelledby="cancelReservationModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirm Cancellation</h5>
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to cancel this reservation?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <form action="cancelReservationAdmin" method="post">
-          <input type="hidden" name="reservationId" id="cancelReservationId">
-          <button type="submit" class="btn btn-danger">Cancel Reservation</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>
-  $('#removeCustomerModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget);
-    var username = button.data('username');
-    $(this).find('#removeUsername').val(username);
-  });
-
-  $('#cancelReservationModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget);
-    var reservationId = button.data('reservationid');
-    $(this).find('#cancelReservationId').val(reservationId);
-  });
-</script>
 </body>
 </html>

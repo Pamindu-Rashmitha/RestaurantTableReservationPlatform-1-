@@ -1,54 +1,45 @@
 package controller;
 
+import util.ReservationManager;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Reservation;
-import util.ReservationManager;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Arrays;
 
 @WebServlet("/cancelReservation")
 public class CancelReservationServlet extends HttpServlet {
+
     private ReservationManager reservationManager;
 
     @Override
-    public void init() {
+    public void init() throws ServletException {
         reservationManager = new ReservationManager();
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         String reservationId = request.getParameter("reservationId");
-        String filePath = getServletContext().getRealPath("/data/reservations.txt");
+        String filePath      = getServletContext().getRealPath("/data/reservations.txt");
 
-        // Load all reservations from the file
-        List<Reservation> reservationsList = reservationManager.getAllReservations(filePath);
-        Reservation[] reservations = new Reservation[reservationsList.size()];
-        for (int i = 0; i < reservationsList.size(); i++) {
-            reservations[i] = reservationsList.get(i);
+        /* ---------- 1. Attempt cancellation ---------- */
+        boolean success = reservationManager.cancelReservationAndPromote(reservationId, filePath);
+
+        /* ---------- 2. Feedback message ---------- */
+        HttpSession session = request.getSession();
+        if (success) {
+            session.setAttribute("statusMessage", "Reservation cancelled successfully.");
+        } else {
+            session.setAttribute("statusMessage", "Cancellation failed: reservation not found or already cancelled.");
         }
 
-        // Update the status of the matching reservation
-        boolean found = false;
-        for (Reservation reservation : reservations) {
-            if (reservation.getReservationId().equals(reservationId)) {
-                reservation.setStatus("CANCELLED");
-                found = true;
-                reservationManager.promoteFromWaitingList();
-                break;
-            }
-        }
-
-        // Save the updated reservations back to the file if found
-        if (found) {
-            reservationManager.saveReservations(Arrays.asList(reservations), filePath); //
-        }
-
-        // Redirect back to the customer dashboard servlet
+        /* ---------- 3. Redirect to dashboard servlet ---------- */
         response.sendRedirect("customerDashboard");
     }
 }
+

@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 
 @WebServlet("/reservation")
 public class ReservationServlet extends HttpServlet {
+
     private ReservationManager reservationManager;
 
     @Override
@@ -26,7 +27,7 @@ public class ReservationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Ensure the user is logged in
+        /* ---------- 1. Authentication check ---------- */
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -34,38 +35,42 @@ public class ReservationServlet extends HttpServlet {
             return;
         }
 
-        // Generate unique reservation ID
-        String reservationId = "RES" + new Timestamp(System.currentTimeMillis()).getTime();
+        /* ---------- 2. Build Reservation object ---------- */
+        String reservationId = "RES" + System.currentTimeMillis();          // unique ID
+        String date  = request.getParameter("date");
+        String time  = request.getParameter("time");
+        int guests   = Integer.parseInt(request.getParameter("numberOfGuests"));
 
-        // Get form data
-        String date = request.getParameter("date");
-        String time = request.getParameter("time");
-        int numberOfGuests = Integer.parseInt(request.getParameter("numberOfGuests"));
-
-        // Create reservation (initial status will be set inside manager)
-        Reservation newReservation = new Reservation(
+        Reservation newRes = new Reservation(
                 reservationId,
                 user.getUsername(),
                 date,
                 time,
-                numberOfGuests,
-                "Pending" // Default, will be overridden inside addReservation()
+                guests,
+                "PENDING"         // will be overwritten by manager
         );
 
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
 
-        // Add the reservation (status set and stored inside the manager)
-        reservationManager.addReservation(newReservation, filePath);
+        /* ---------- 3. Add via ReservationManager ---------- */
+        reservationManager.addReservation(newRes, filePath);
 
-        // Status message
-        String statusMessage = "CONFIRMED".equals(newReservation.getStatus())
-                ? "Table reserved successfully!"
-                : "Added to waiting list. Position: " + reservationManager.getWaitingListPosition(newReservation);
+        /* ---------- 4. Build feedback message ---------- */
+        String statusMessage;
+        if ("CONFIRMED".equalsIgnoreCase(newRes.getStatus())) {
+            statusMessage = "Table reserved successfully!";
+        } else if ("WAITING".equalsIgnoreCase(newRes.getStatus())) {
+            int pos = reservationManager.getWaitingListPosition(newRes);
+            statusMessage = "All tables are booked. You were added to the waiting list (position #" + pos + ").";
+        } else {
+            statusMessage = "Reservation saved. Current status: " + newRes.getStatus();
+        }
 
-        // Store message in session for display
+        /* ---------- 5. Flash message → session ---------- */
         session.setAttribute("statusMessage", statusMessage);
 
-        // Redirect to dashboard
-        response.sendRedirect("customerDashboard.jsp");
+        /* ---------- 6. Redirect to dashboard servlet (not JSP) ---------- */
+        response.sendRedirect("customerDashboard");   // triggers CustomerDashboardServlet
     }
 }
+

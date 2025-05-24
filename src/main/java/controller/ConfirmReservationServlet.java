@@ -9,11 +9,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet("/confirmReservation")
 public class ConfirmReservationServlet extends HttpServlet {
+
     private ReservationManager reservationManager;
 
     @Override
@@ -24,29 +25,52 @@ public class ConfirmReservationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        /* ---------- 1. Admin auth check ---------- */
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"admin".equals(user.getRole())) {
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || !"admin".equalsIgnoreCase(admin.getRole())) {
             response.sendRedirect("login.jsp");
             return;
         }
 
+        /* ---------- 2. Locate reservation ---------- */
         String reservationId = request.getParameter("reservationId");
-        String filePath = getServletContext().getRealPath("/data/reservations.txt");
-        Reservation reservation = reservationManager.getReservationById(reservationId, filePath);
-        if (reservation == null || !"Paid".equals(reservation.getStatus())) {
+        String filePath      = getServletContext().getRealPath("/data/reservations.txt");
+
+        Reservation res = reservationManager.getReservationById(reservationId, filePath);
+        if (res == null) {
+            session.setAttribute("statusMessage", "Reservation ID not found.");
             response.sendRedirect("adminDashboard");
             return;
         }
 
-        reservation.setStatus("Confirmed");
-        if (reservationManager.updateReservation(reservation, filePath)) {
-            List<Reservation> allReservations = reservationManager.getAllReservations(filePath);
-            request.setAttribute("allReservations", allReservations);
-            request.getRequestDispatcher("adminDashboard.jsp").forward(request, response);
+        /* ---------- 3. Remove old instance ---------- */
+        reservationManager.cancelReservationAndPromote(reservationId, filePath);
+
+        /* ---------- 4. Re-add as a fresh request (manager will assign status) ---------- */
+        Reservation newCopy = new Reservation(
+                res.getReservationId(),
+                res.getUserId(),
+                res.getDate(),
+                res.getTime(),
+                res.getNumberOfGuests(),
+                "PENDING"
+        );
+        reservationManager.addReservation(newCopy, filePath);
+
+        /* ---------- 5. Build admin feedback ---------- */
+        String msg = "Reservation " + reservationId + " ";
+        if ("CONFIRMED".equalsIgnoreCase(newCopy.getStatus())) {
+            msg += "is now CONFIRMED.";
         } else {
-            request.setAttribute("error", "Confirmation failed");
-            request.getRequestDispatcher("adminDashboard.jsp").forward(request, response);
+            int pos = reservationManager.getWaitingListPosition(newCopy);
+            msg += "could not be confirmed (capacity full). It remains WAITING at position #" + pos + ".";
         }
+        session.setAttribute("statusMessage", msg);
+
+        /* ---------- 6. Redirect to admin dashboard servlet ---------- */
+        response.sendRedirect("adminDashboard");
     }
 }
+
