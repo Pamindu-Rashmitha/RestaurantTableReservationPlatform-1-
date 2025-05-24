@@ -81,6 +81,15 @@ public class ReservationManager {
         return true;
     }
 
+    public void promoteFromWaitingList() {
+        Reservation next = waitingList.poll(); // FIFO order
+        if (next != null) {
+            next.setStatus("CONFIRMED");
+            activeReservations.enqueue(next);
+
+        }
+    }
+
     public void saveReservations(Collection<Reservation> reservations, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (Reservation reservation : reservations) {

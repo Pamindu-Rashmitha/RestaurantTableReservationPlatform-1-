@@ -38,6 +38,7 @@ public class CancelReservationServlet extends HttpServlet {
             if (reservation.getReservationId().equals(reservationId)) {
                 reservation.setStatus("CANCELLED");
                 found = true;
+                reservationManager.promoteFromWaitingList();
                 break;
             }
         }
