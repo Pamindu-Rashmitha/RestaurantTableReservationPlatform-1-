@@ -36,7 +36,7 @@ public class CancelReservationServlet extends HttpServlet {
         boolean found = false;
         for (Reservation reservation : reservations) {
             if (reservation.getReservationId().equals(reservationId)) {
-                reservation.setStatus("Cancelled");
+                reservation.setStatus("CANCELLED");
                 found = true;
                 break;
             }
@@ -44,7 +44,7 @@ public class CancelReservationServlet extends HttpServlet {
 
         // Save the updated reservations back to the file if found
         if (found) {
-            reservationManager.saveReservations(Arrays.asList(reservations), filePath); // ✅ Converted to Collection
+            reservationManager.saveReservations(Arrays.asList(reservations), filePath); //
         }
 
         // Redirect back to the customer dashboard servlet
