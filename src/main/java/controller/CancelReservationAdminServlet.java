@@ -39,7 +39,7 @@ public class CancelReservationAdminServlet extends HttpServlet {
             return;
         }
 
-        reservation.setStatus("Cancelled");
+        reservation.setStatus("CANCELLED");
         if (reservationManager.updateReservation(reservation, filePath)) {
             List<Reservation> allReservations = reservationManager.getAllReservations(filePath);
             request.setAttribute("allReservations", allReservations);
