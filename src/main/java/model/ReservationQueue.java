@@ -9,11 +9,11 @@ public class ReservationQueue {
 
     //storage
     private final Reservation[] queue;                 // confirmed reservations
-    private final LinkedList<Reservation> waitingList; // overflow / waiting list
+    private final LinkedList<Reservation> waitingList; // waiting list
 
     private int front;   // index of first confirmed reservation
     private int rear;    // index of last confirmed reservation
-    private int size;    // number of confirmed reservations (<= MAX_TABLES)
+    private int size;    // number of confirmed reservations (MAX_TABLES)
 
     public ReservationQueue() {
         queue        = new Reservation[MAX_TABLES];
