@@ -23,12 +23,17 @@ public class ReservationQueue {
         size  = 0;
     }
 
+    public boolean isFull()  {
+        return size == MAX_TABLES;
+    }
 
-    public boolean isFull()  { return size == MAX_TABLES; }
-    public boolean isEmpty() { return size == 0;          }
-    public int     size()    { return size;               }
+    public boolean isEmpty() {
+        return size == 0;
+    }
 
-
+    public int size() {
+        return size;
+    }
 
     //CONFIRMED if there is space, otherwise put to WAITING list
     public void enqueue(Reservation reservation) {
