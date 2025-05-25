@@ -177,7 +177,7 @@ public class ReservationManager {
         int mid = reservations.length / 2;
         Reservation[] left = new Reservation[mid];
         Reservation[] right = new Reservation[reservations.length - mid];
-        
+
         // Copy elements to left and right arrays
         System.arraycopy(reservations, 0, left, 0, mid);
         System.arraycopy(reservations, mid, right, 0, reservations.length - mid);
@@ -211,22 +211,22 @@ public class ReservationManager {
     }
 
     public List<Reservation> getConfirmedReservationsSorted(String path) {
-        // 1. Load everything into your activeReservations queue
+        //  Load everything into  activeReservations queue
         loadCurrentState(path);
 
-        // 2. Grab the confirmed reservations as a List
+        // Grab the confirmed reservations as a List
         List<Reservation> confirmed = new ArrayList<>();
         for (int i = 0; i < activeReservations.size(); i++) {
             confirmed.add(activeReservations.peek(i));
         }
 
-        // 3. Convert List -> Array
+        // Convert List -> Array
         Reservation[] arr = confirmed.toArray(new Reservation[0]);
 
-        // 4. Sort the array in-place using your mergeSortReservations
+        // Sort the array in-place using your mergeSortReservations
         Reservation[] sortedArr = mergeSortReservations(arr);
 
-        // 5. Convert back to List and return
+        // Convert back to List and return
         List<Reservation> sortedList = new ArrayList<>(sortedArr.length);
         for (Reservation r : sortedArr) {
             sortedList.add(r);
