@@ -9,12 +9,12 @@ import java.util.*;
 
 public class ReservationManager {
 
-    /** runtime queue (confirmed) + waiting list */
+
     private final ReservationQueue activeReservations = new ReservationQueue();
 
 
 
-    // Load file abd rebuild queue + waiting list
+    // Load file and rebuild queue + waiting list
     private void loadCurrentState(String filePath) {
         activeReservations.clear();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -48,12 +48,11 @@ public class ReservationManager {
             }
         } catch (IOException e) { e.printStackTrace(); }
     }
+
     private static String csv(Reservation r) {
         return String.join(",", r.getReservationId(), r.getUserId(), r.getDate(),
                 r.getTime(), String.valueOf(r.getNumberOfGuests()), r.getStatus());
     }
-
-
 
     //Add reservation
     public boolean addReservation(Reservation r, String path) {
@@ -130,13 +129,6 @@ public class ReservationManager {
         return null;
     }
 
-    public List<Reservation> getConfirmedReservations(String path) {
-        loadCurrentState(path);
-        List<Reservation> list = new ArrayList<>();
-        for (int i = 0; i < activeReservations.size(); i++) list.add(activeReservations.peek(i));
-        return list;
-    }
-
     public List<Reservation> getWaitingReservations(String path) {
         loadCurrentState(path);
         return new ArrayList<>(activeReservations.getWaitingList());
@@ -155,12 +147,7 @@ public class ReservationManager {
         return list;
     }
 
-    public List<Reservation> getAllReservations(String path) {
-        loadCurrentState(path);
-        List<Reservation> all = new ArrayList<>(getConfirmedReservations(path));
-        all.addAll(getWaitingReservations(path));
-        return all;
-    }
+
 
     //get the position in waiting list
     public int getWaitingListPosition(Reservation res) {
@@ -181,6 +168,70 @@ public class ReservationManager {
             if (r.getReservationId().equals(id)) { it.remove(); return r; }
         }
         return null;
+    }
+
+    public Reservation[] mergeSortReservations(Reservation[] reservations) {
+        if (reservations == null || reservations.length <= 1) {
+            return reservations;
+        }
+        int mid = reservations.length / 2;
+        Reservation[] left = new Reservation[mid];
+        Reservation[] right = new Reservation[reservations.length - mid];
+        
+        // Copy elements to left and right arrays
+        System.arraycopy(reservations, 0, left, 0, mid);
+        System.arraycopy(reservations, mid, right, 0, reservations.length - mid);
+        left = mergeSortReservations(left);
+        right = mergeSortReservations(right);
+        return merge(left, right);
+    }
+
+    private Reservation[] merge(Reservation[] left, Reservation[] right) {
+        Reservation[] merged = new Reservation[left.length + right.length];
+        int i = 0, j = 0, k = 0;
+        ReservationTimeComparator comparator = new ReservationTimeComparator();
+
+        while (i < left.length && j < right.length) {
+            if (comparator.compare(left[i], right[j]) <= 0) {
+                merged[k++] = left[i++];
+            } else {
+                merged[k++] = right[j++];
+            }
+        }
+
+        while (i < left.length) {
+            merged[k++] = left[i++];
+        }
+
+        while (j < right.length) {
+            merged[k++] = right[j++];
+        }
+
+        return merged;
+    }
+
+    public List<Reservation> getConfirmedReservationsSorted(String path) {
+        // 1. Load everything into your activeReservations queue
+        loadCurrentState(path);
+
+        // 2. Grab the confirmed reservations as a List
+        List<Reservation> confirmed = new ArrayList<>();
+        for (int i = 0; i < activeReservations.size(); i++) {
+            confirmed.add(activeReservations.peek(i));
+        }
+
+        // 3. Convert List -> Array
+        Reservation[] arr = confirmed.toArray(new Reservation[0]);
+
+        // 4. Sort the array in-place using your mergeSortReservations
+        Reservation[] sortedArr = mergeSortReservations(arr);
+
+        // 5. Convert back to List and return
+        List<Reservation> sortedList = new ArrayList<>(sortedArr.length);
+        for (Reservation r : sortedArr) {
+            sortedList.add(r);
+        }
+        return sortedList;
     }
 }
 

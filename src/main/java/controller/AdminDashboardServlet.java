@@ -43,7 +43,7 @@ public class AdminDashboardServlet extends HttpServlet {
         String filePath = getServletContext().getRealPath("/data/reservations.txt");
 
         List<Reservation> confirmed =
-                reservationManager.getConfirmedReservations(filePath);
+                reservationManager.getConfirmedReservationsSorted(filePath);
         List<Reservation> waiting =
                 reservationManager.getWaitingReservations(filePath);
 

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 public class ReservationQueue {
 
-    private static final int MAX_TABLES = 2;
+    private static final int MAX_TABLES = 4;
 
     //storage
     private final Reservation[] queue;                 // confirmed reservations
