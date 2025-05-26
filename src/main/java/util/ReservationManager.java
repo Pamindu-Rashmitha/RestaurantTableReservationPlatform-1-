@@ -36,7 +36,7 @@ public class ReservationManager {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
         }
     }
 
@@ -52,7 +52,9 @@ public class ReservationManager {
             for (Reservation r : activeReservations.getWaitingList()) {
                 bw.write(csv(r)); bw.newLine();
             }
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static String csv(Reservation r) {
@@ -121,7 +123,9 @@ public class ReservationManager {
         // waiting list
         Iterator<Reservation> it = activeReservations.getWaitingList().iterator();
         while (it.hasNext()) {
-            if (it.next().getUserId().equals(userId)) { it.remove(); removed = true; }
+            if (it.next().getUserId().equals(userId)) {
+                it.remove(); removed = true;
+            }
         }
         // fill vacancies
         while (!activeReservations.isFull() && !activeReservations.getWaitingList().isEmpty()) {
@@ -192,6 +196,7 @@ public class ReservationManager {
         if (reservations == null || reservations.length <= 1) {
             return reservations;
         }
+        //dividing the array
         int mid = reservations.length / 2;
         Reservation[] left = new Reservation[mid];
         Reservation[] right = new Reservation[reservations.length - mid];
@@ -199,16 +204,24 @@ public class ReservationManager {
         // Copy elements to left and right arrays
         System.arraycopy(reservations, 0, left, 0, mid);
         System.arraycopy(reservations, mid, right, 0, reservations.length - mid);
+
+        //dividing the left and right again
         left = mergeSortReservations(left);
         right = mergeSortReservations(right);
         return merge(left, right);
     }
 
+    //merge the sorted left and right array
     private Reservation[] merge(Reservation[] left, Reservation[] right) {
+        //create a new array "merged" to store the merged result
         Reservation[] merged = new Reservation[left.length + right.length];
+
         int i = 0, j = 0, k = 0;
+
+        //create an object from ReservationTimeComparator
         ReservationTimeComparator comparator = new ReservationTimeComparator();
 
+        //compare elements from left and right
         while (i < left.length && j < right.length) {
             if (comparator.compare(left[i], right[j]) <= 0) {
                 merged[k++] = left[i++];
