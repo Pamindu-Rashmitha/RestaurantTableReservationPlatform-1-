@@ -25,13 +25,19 @@ public class ReservationManager {
                 Reservation r = new Reservation(p[0], p[1], p[2], p[3],
                         Integer.parseInt(p[4]), p[5]);
                 if ("CONFIRMED".equalsIgnoreCase(r.getStatus())) {
-                    if (!activeReservations.isFull()) activeReservations.enqueue(r);
-                    else { r.setStatus("WAITING"); activeReservations.getWaitingList().add(r); }
+                    if (!activeReservations.isFull()) {
+                        activeReservations.enqueue(r);
+                    }
+                    else {
+                        r.setStatus("WAITING"); activeReservations.getWaitingList().add(r);
+                    }
                 } else if ("WAITING".equalsIgnoreCase(r.getStatus())) {
                     activeReservations.getWaitingList().add(r);
                 }
             }
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace(); 
+        }
     }
 
     //save reservations
