@@ -57,9 +57,15 @@ public class ReservationManager {
     //Add reservation
     public boolean addReservation(Reservation r, String path) {
         loadCurrentState(path);
-        if (getReservationById(r.getReservationId(), path) != null) return false;
-        if (activeReservations.isFull()) { r.setStatus("WAITING"); activeReservations.getWaitingList().add(r); }
-        else { r.setStatus("CONFIRMED"); activeReservations.enqueue(r); }
+        if (getReservationById(r.getReservationId(), path) != null){
+            return false;
+        }
+        if (activeReservations.isFull()) {
+            r.setStatus("WAITING"); activeReservations.getWaitingList().add(r);
+        }
+        else {
+            r.setStatus("CONFIRMED"); activeReservations.enqueue(r);
+        }
         saveReservations(path);
         return true;
     }
@@ -68,8 +74,12 @@ public class ReservationManager {
     public boolean cancelReservationAndPromote(String id, String path) {
         loadCurrentState(path);
         Reservation removed = activeReservations.remove(id);
-        if (removed == null) removed = removeFromWaitingList(id);
-        if (removed == null) return false;
+        if (removed == null) {
+            removed = removeFromWaitingList(id);
+        }
+        if (removed == null) {
+            return false;
+        }
 
         removed.setStatus("CANCELLED");
         if (!activeReservations.isFull() && !activeReservations.getWaitingList().isEmpty()) {
@@ -83,7 +93,9 @@ public class ReservationManager {
 
     //update reservation
     public boolean updateReservation(Reservation upd, String path) {
-        if (!cancelReservationAndPromote(upd.getReservationId(), path)) return false;
+        if (!cancelReservationAndPromote(upd.getReservationId(), path)) {
+            return false;
+        }
         return addReservation(upd, path);
     }
 
