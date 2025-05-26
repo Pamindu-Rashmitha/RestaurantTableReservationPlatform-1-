@@ -71,7 +71,9 @@ public class ReservationQueue {
 
 
     public Reservation peek(int position) {
-        if (position < 0 || position >= size) return null;
+        if (position < 0 || position >= size) {
+            return null;
+        }
         return queue[(front + position) % MAX_TABLES];
     }
 
@@ -80,9 +82,11 @@ public class ReservationQueue {
         return waitingList;
     }
 
-
+    //clear both queue and waitingList
     public void clear() {
-        for (int i = 0; i < MAX_TABLES; i++) queue[i] = null;
+        for (int i = 0; i < MAX_TABLES; i++){
+            queue[i] = null;
+        }
         front = 0;
         rear  = -1;
         size  = 0;
